@@ -1,0 +1,124 @@
+import { useMemo, useState } from "react";
+
+import { contentTypes } from "@/core/content-types/registry";
+import { renderMarkdown } from "@/lib/markdown/markdown";
+import { cn } from "@/lib/utils";
+import type { EditorMode } from "@/types/typecontent";
+
+import { CopyToProjectDialog } from "./CopyToProjectDialog";
+import { EditorToolbar } from "./EditorToolbar";
+import { MetadataPanel } from "./MetadataPanel";
+import { SEOPanel } from "./SEOPanel";
+import { useContentEditor } from "./useContentEditor";
+
+export function ContentEditor({ initialType = "blog" }: { initialType?: string }) {
+  const ed = useContentEditor(initialType);
+  const [mode, setMode] = useState<EditorMode>("split");
+  const [tab, setTab] = useState<"seo" | "metadata">("seo");
+  const html = useMemo(() => renderMarkdown(ed.markdown), [ed.markdown]);
+
+  return (
+    <div className="mx-auto max-w-[1600px] space-y-4 px-4 py-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-1 rounded-lg border border-border bg-surface p-1">
+          {contentTypes.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => ed.changeContentType(t.id)}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                ed.contentTypeId === t.id && "bg-secondary text-foreground",
+              )}
+            >
+              {t.name}
+            </button>
+          ))}
+        </div>
+        <span className="rounded border border-border px-2 py-1 font-mono text-xs capitalize text-muted-foreground">
+          {ed.status}
+        </span>
+        <div className="ml-auto">
+          <CopyToProjectDialog contentTypeId={ed.contentTypeId} title={ed.title} markdown={ed.markdown} />
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
+        <div className="panel overflow-hidden rounded-lg border border-border bg-surface">
+          <EditorToolbar
+            onCommand={ed.runCommand}
+            onUndo={ed.undo}
+            onRedo={ed.redo}
+            canUndo={ed.canUndo}
+            canRedo={ed.canRedo}
+            mode={mode}
+            onModeChange={setMode}
+          />
+          <input
+            value={ed.title}
+            onChange={(e) => ed.setTitle(e.target.value)}
+            placeholder="Untitled"
+            aria-label="Title"
+            className="w-full border-b border-border bg-transparent px-5 py-4 text-2xl font-semibold tracking-tight outline-none"
+          />
+          <div className={cn("grid min-h-[620px]", mode === "split" && "md:grid-cols-2")}>
+            {mode !== "preview" && (
+              <textarea
+                ref={ed.textareaRef}
+                value={ed.markdown}
+                onChange={(e) => ed.setMarkdown(e.target.value)}
+                onKeyDown={(e) => {
+                  const mod = e.metaKey || e.ctrlKey;
+                  if (!mod) return;
+                  const k = e.key.toLowerCase();
+                  if (k === "z") { e.preventDefault(); e.shiftKey ? ed.redo() : ed.undo(); }
+                  else if (k === "b") { e.preventDefault(); ed.runCommand("bold"); }
+                  else if (k === "i") { e.preventDefault(); ed.runCommand("italic"); }
+                }}
+                spellCheck={false}
+                aria-label="Markdown"
+                className="h-[620px] w-full resize-none bg-transparent p-5 font-mono text-sm leading-relaxed outline-none"
+              />
+            )}
+            {mode !== "edit" && (
+              <div className={cn("h-[620px] overflow-y-auto p-6", mode === "split" && "border-l border-border")}>
+                <h1 className="mb-4 text-3xl font-semibold tracking-tight">{ed.title}</h1>
+                <article className="tc-article" dangerouslySetInnerHTML={{ __html: html }} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <aside className="panel rounded-lg border border-border bg-surface">
+          <div className="flex border-b border-border text-sm">
+            {(["seo", "metadata"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={cn(
+                  "flex-1 px-3 py-2.5 text-muted-foreground",
+                  tab === t && "border-b-2 border-primary text-foreground",
+                )}
+              >
+                {t === "seo" ? "SEO" : "Metadata"}
+              </button>
+            ))}
+          </div>
+          <div className="p-4">
+            {tab === "seo" ? (
+              <SEOPanel
+                seo={ed.seo}
+                enabled={ed.contentType.seo.enabled}
+                metaDescription={ed.metaDescription}
+                onMetaDescription={ed.setMetaDescription}
+                focusKeyword={ed.focusKeyword}
+                onFocusKeyword={ed.setFocusKeyword}
+              />
+            ) : (
+              <MetadataPanel type={ed.contentType} metadata={ed.metadata} onChange={ed.updateMetadata} />
+            )}
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
