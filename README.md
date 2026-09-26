@@ -4,7 +4,7 @@
 
 TypeContent is an open-source, developer-first content editor and content infrastructure for SaaS builders.
 
-Build **Blog, Pages, Docs, Knowledge Base, Changelog, Courses**, and other content experiences with one reusable editor instead of maintaining a separate editor for every content type.
+Build **Blog, Pages, Docs, Knowledge Base, Changelog, Courses**, and other content experiences with one reusable editor instead of maintaining a separate editor for every content type. more efficient and less component because reusable for every content type.
 
 ## Why TypeContent?
 
@@ -415,60 +415,18 @@ npm run build
 ### Phase 1 — Playground
 
 - [x] Product concept
-- [ ] Unified editor UI
-- [ ] Edit / Preview / Split
-- [ ] Content type selector
-- [ ] Blog
-- [ ] Page
-- [ ] Docs
-- [ ] Knowledge Base
-- [ ] Changelog
-- [ ] Course
-- [ ] SEO analyzer
-- [ ] Metadata panels
-- [ ] Responsive editor
-
-### Phase 2 — Editor Core
-
-- [ ] Markdown AST
-- [ ] Custom blocks
-- [ ] Slash commands
-- [ ] Keyboard shortcuts
-- [ ] Drag & drop blocks
-- [ ] Image handling
-- [ ] Embeds
-- [ ] Extensible toolbar
-
-### Phase 3 — Developer Experience
-
-- [ ] `typecontent` CLI
-- [ ] Copy-to-project workflow
-- [ ] Reusable package distribution
-- [ ] Starter templates
-- [ ] Next.js example
-- [ ] Vite example
-- [ ] Cloudflare example
-
-### Phase 4 — Persistence
-
-- [ ] Content adapter interface
-- [ ] Local adapter
-- [ ] Cloudflare D1 adapter
-- [ ] Supabase adapter
-- [ ] PostgreSQL adapter
-- [ ] Draft / publish
-- [ ] Revisions
-- [ ] Versioning
-
-### Phase 5 — Advanced Content
-
-- [ ] Custom content types
-- [ ] Custom fields
-- [ ] Custom blocks
-- [ ] Taxonomies
-- [ ] Relations
-- [ ] Media library
-- [ ] Content workflows
+- [x] Unified editor UI
+- [x] Edit / Preview / Split
+- [x] Content type selector
+- [x] Blog
+- [x] Page
+- [x] Docs
+- [x] Knowledge Base
+- [x] Changelog
+- [x] Course
+- [x] SEO analyzer
+- [x] Metadata panels
+- [x] Responsive editor
 
 ---
 
@@ -543,7 +501,7 @@ The final license will be defined before the first public release.
 
 ## ❤️ Built for SaaS Builders
 
-TypeContent exists because SaaS builders should spend their time building their product—not rebuilding the same content editor for the tenth time. This project was built with [Lovable](https://lovable.dev/invite/YQVMQGE). For the **Demo**: look this [screenshot](https://prnt.sc/d5TFluyzmSyX)
+TypeContent exists because SaaS builders should spend their time building their product not rebuilding the same content editor for the tenth time. This project was built with [Lovable](https://lovable.dev/invite/YQVMQGE). for the **Demo**: look at this [screenshot](https://prnt.sc/d5TFluyzmSyX)
 
 **One editor. Every content type.**
 
