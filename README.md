@@ -4,12 +4,11 @@ please implement now
 
 This project was built with [Lovable](https://lovable.dev/invite/YQVMQGE).
 
-## Build with Lovable
-
 Continue developing this project with your fav software.
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Demo**: look this [screenshot](https://prnt.sc/d5TFluyzmSyX)
 - **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
