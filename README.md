@@ -2,13 +2,11 @@
 
 please implement now
 
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://typecontent.lovable.app
+This project was built with [Lovable](https://lovable.dev/invite/YQVMQGE).
 
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/fcfe3487-b6a3-48ce-bbda-464a9bde2512).
+Continue developing this project with your fav software.
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.
