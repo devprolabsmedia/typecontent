@@ -1,10 +1,10 @@
 import { CheckCircle2, ChevronDown, Info, TriangleAlert, XCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import type { SEOResult, SEOStatus } from "@/types/typecontent";
 
-const icon: Record<SEOStatus, JSX.Element> = {
+const icon: Record<SEOStatus, ReactNode> = {
   pass: <CheckCircle2 className="size-4 text-success" />,
   warning: <TriangleAlert className="size-4 text-warning" />,
   fail: <XCircle className="size-4 text-destructive" />,
