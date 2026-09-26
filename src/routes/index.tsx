@@ -1,24 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { SiteHeader } from "@/components/typecontent/SiteHeader";
+import { ContentEditor } from "@/components/typecontent/editor/ContentEditor";
+import { SITE } from "@/core/content/site";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "TypeContent — Markdown editor playground for every content type" },
+      { name: "description", content: "Try the TypeContent editor: Markdown, live preview, SEO scoring and metadata for blogs, docs, changelogs and more." },
+      { property: "og:title", content: "TypeContent Playground" },
+      { property: "og:description", content: "One editor for every content type — live preview, SEO and metadata built in." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <section className="mx-auto max-w-[1600px] px-4 pt-10">
+        <p className="label-xs text-primary">{SITE.positioning}</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight md:text-5xl">{SITE.tagline}</h1>
+        <p className="mt-3 max-w-2xl text-muted-foreground">
+          Switch content types below — the toolbar, metadata fields and SEO rules adapt automatically.
+        </p>
+      </section>
+      <ContentEditor />
     </div>
   );
 }
