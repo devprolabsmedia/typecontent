@@ -21,9 +21,10 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const blocks: MarkdownBlock[] = [];
   let i = 0;
+  const at = (n: number): string => lines[n] ?? "";
 
   while (i < lines.length) {
-    const line = lines[i];
+    const line = at(i);
 
     if (!line.trim()) {
       i += 1;
@@ -36,8 +37,8 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
       const lang = fence[1] ?? "";
       const code: string[] = [];
       i += 1;
-      while (i < lines.length && !/^```\s*$/.test(lines[i])) {
-        code.push(lines[i]);
+      while (i < lines.length && !/^```\s*$/.test(at(i))) {
+        code.push(at(i));
         i += 1;
       }
       i += 1;
@@ -48,7 +49,7 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
     // Heading
     const heading = line.match(/^(#{1,6})\s+(.*)$/);
     if (heading) {
-      blocks.push({ kind: "heading", level: heading[1].length, text: heading[2].trim() });
+      blocks.push({ kind: "heading", level: (heading[1] ?? "").length, text: (heading[2] ?? "").trim() });
       i += 1;
       continue;
     }
@@ -63,8 +64,8 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
     // Blockquote
     if (/^>\s?/.test(line)) {
       const quoted: string[] = [];
-      while (i < lines.length && /^>\s?/.test(lines[i])) {
-        quoted.push(lines[i].replace(/^>\s?/, ""));
+      while (i < lines.length && /^>\s?/.test(at(i))) {
+        quoted.push(at(i).replace(/^>\s?/, ""));
         i += 1;
       }
       blocks.push({ kind: "quote", lines: quoted });
@@ -77,9 +78,9 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
       const items: string[] = [];
       while (
         i < lines.length &&
-        (ordered ? /^\s*\d+[.)]\s+/.test(lines[i]) : /^\s*([-*+])\s+/.test(lines[i]))
+        (ordered ? /^\s*\d+[.)]\s+/.test(at(i)) : /^\s*([-*+])\s+/.test(at(i)))
       ) {
-        items.push(lines[i].replace(/^\s*(?:[-*+]|\d+[.)])\s+/, ""));
+        items.push(at(i).replace(/^\s*(?:[-*+]|\d+[.)])\s+/, ""));
         i += 1;
       }
       blocks.push({ kind: "list", ordered, items });
@@ -89,7 +90,7 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
     // Standalone image
     const img = line.trim().match(IMAGE_ONLY);
     if (img) {
-      blocks.push({ kind: "image", alt: img[1], src: img[2] });
+      blocks.push({ kind: "image", alt: img[1] ?? "", src: img[2] ?? "" });
       i += 1;
       continue;
     }
@@ -98,15 +99,15 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
     const para: string[] = [];
     while (
       i < lines.length &&
-      lines[i].trim() &&
-      !/^(#{1,6})\s+/.test(lines[i]) &&
-      !/^```/.test(lines[i]) &&
-      !/^>\s?/.test(lines[i]) &&
-      !/^\s*([-*+])\s+/.test(lines[i]) &&
-      !/^\s*\d+[.)]\s+/.test(lines[i]) &&
-      !/^(-{3,}|\*{3,}|_{3,})\s*$/.test(lines[i])
+      at(i).trim() &&
+      !/^(#{1,6})\s+/.test(at(i)) &&
+      !/^```/.test(at(i)) &&
+      !/^>\s?/.test(at(i)) &&
+      !/^\s*([-*+])\s+/.test(at(i)) &&
+      !/^\s*\d+[.)]\s+/.test(at(i)) &&
+      !/^(-{3,}|\*{3,}|_{3,})\s*$/.test(at(i))
     ) {
-      para.push(lines[i]);
+      para.push(at(i));
       i += 1;
     }
     if (para.length) blocks.push({ kind: "paragraph", text: para.join("\n") });
