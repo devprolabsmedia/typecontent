@@ -128,7 +128,7 @@ export function renderInline(input: string): string {
   const codes: string[] = [];
   let text = escapeHtml(input).replace(/`([^`]+)`/g, (_m, code: string) => {
     codes.push(code);
-    return `\u0000${codes.length - 1}\u0000`;
+    return `\uE000${codes.length - 1}\uE000`;
   });
 
   text = text
@@ -148,7 +148,7 @@ export function renderInline(input: string): string {
     .replace(/~~([^~]+)~~/g, "<del>$1</del>")
     .replace(/\n/g, "<br />");
 
-  return text.replace(/\u0000(\d+)\u0000/g, (_m, index: string) => `<code>${codes[+index]}</code>`);
+  return text.replace(/\uE000(\d+)\uE000/g, (_m, index: string) => `<code>${codes[+index]}</code>`);
 }
 
 export function slugify(value: string): string {

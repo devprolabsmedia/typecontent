@@ -117,13 +117,12 @@ export function analyzeSEO(input: SEOInput, type: ContentTypeDefinition): SEORes
     id: "single-h1",
     label: "H1 structure",
     weight: 10,
-    status: h1Count === 1 ? "pass" : h1Count === 0 ? "warning" : "fail",
-    detail:
-      h1Count === 1
-        ? "Exactly one H1 found — that's the recommended structure."
-        : h1Count === 0
-          ? "No H1 found. Add one top-level heading that states the subject of the content."
-          : `Found ${h1Count} H1 headings. Keep one H1 and demote the rest to H2.`,
+    status: !input.title.trim() ? "fail" : h1Count === 0 ? "pass" : "warning",
+    detail: !input.title.trim()
+      ? "Add a title — it is rendered as the page's only H1."
+      : h1Count === 0
+        ? "The title is the single H1 and the body starts at H2 — the recommended structure."
+        : `The body contains ${h1Count} H1 heading(s). The title is already the H1; demote these to H2.`,
   });
 
   let hierarchyBreaks = 0;
