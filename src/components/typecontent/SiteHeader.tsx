@@ -22,7 +22,10 @@ export function SiteHeader() {
             {SITE.version}
           </span>
         </Link>
-        <nav aria-label="Main" className="flex min-w-0 items-center gap-0.5 overflow-x-auto text-sm">
+        <nav
+          aria-label="Main"
+          className="flex min-w-0 items-center gap-0.5 overflow-x-auto text-sm"
+        >
           {nav.map((n) => (
             <Link
               key={n.to}
