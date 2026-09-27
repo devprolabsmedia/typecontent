@@ -25,7 +25,7 @@ export function computeStats(markdown: string): ContentStats {
   let externalLinks = 0;
   const withoutImages = markdown.replace(IMAGE_RE, " ");
   for (const match of withoutImages.matchAll(LINK_RE)) {
-    const href = match[1];
+    const href = match[1] ?? "";
     if (/^https?:\/\//i.test(href)) externalLinks += 1;
     else if (href.startsWith("#")) continue;
     else internalLinks += 1;
@@ -35,7 +35,7 @@ export function computeStats(markdown: string): ContentStats {
   let imagesMissingAlt = 0;
   for (const match of markdown.matchAll(IMAGE_RE)) {
     images += 1;
-    if (!match[1].trim()) imagesMissingAlt += 1;
+    if (!(match[1] ?? "").trim()) imagesMissingAlt += 1;
   }
 
   return {

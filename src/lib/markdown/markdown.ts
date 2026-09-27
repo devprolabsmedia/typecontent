@@ -49,7 +49,11 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
     // Heading
     const heading = line.match(/^(#{1,6})\s+(.*)$/);
     if (heading) {
-      blocks.push({ kind: "heading", level: (heading[1] ?? "").length, text: (heading[2] ?? "").trim() });
+      blocks.push({
+        kind: "heading",
+        level: (heading[1] ?? "").length,
+        text: (heading[2] ?? "").trim(),
+      });
       i += 1;
       continue;
     }
