@@ -52,8 +52,7 @@ export function createMemoryAdapter(seed: Content[] = []): ContentAdapter {
       if (query.search) {
         const term = query.search.toLowerCase();
         items = items.filter(
-          (i) =>
-            i.title.toLowerCase().includes(term) || i.markdown.toLowerCase().includes(term),
+          (i) => i.title.toLowerCase().includes(term) || i.markdown.toLowerCase().includes(term),
         );
       }
       const offset = query.offset ?? 0;

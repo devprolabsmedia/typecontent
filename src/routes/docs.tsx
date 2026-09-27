@@ -7,9 +7,16 @@ export const Route = createFileRoute("/docs")({
   head: () => ({
     meta: [
       { title: "Docs — Getting started with TypeContent" },
-      { name: "description", content: "Install TypeContent, render the editor, add custom content types and plug in your own storage adapter." },
+      {
+        name: "description",
+        content:
+          "Install TypeContent, render the editor, add custom content types and plug in your own storage adapter.",
+      },
       { property: "og:title", content: "TypeContent Docs" },
-      { property: "og:description", content: "Install, configure content types and connect storage in minutes." },
+      {
+        property: "og:description",
+        content: "Install, configure content types and connect storage in minutes.",
+      },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -19,7 +26,10 @@ export const Route = createFileRoute("/docs")({
 
 const steps = [
   { title: "Install", code: `bun add ${SITE.packageName}` },
-  { title: "Render the editor", code: `import { ContentEditor } from "${SITE.packageName}";\n\n<ContentEditor contentType="blog" />` },
+  {
+    title: "Render the editor",
+    code: `import { ContentEditor } from "${SITE.packageName}";\n\n<ContentEditor contentType="blog" />`,
+  },
   {
     title: "Add a content type",
     code: `const release = {\n  id: "release",\n  name: "Release",\n  features: { version: true, tags: true },\n  metadataGroups: [...],\n  seo: { enabled: false, titleRange: [10, 60], descriptionRange: [50, 160], minWords: 60 },\n};`,
@@ -42,8 +52,13 @@ function DocsPage() {
         <ol className="mt-8 space-y-6">
           {steps.map((s, i) => (
             <li key={s.title}>
-              <h2 className="font-semibold"><span className="mr-2 font-mono text-primary">{i + 1}.</span>{s.title}</h2>
-              <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-surface p-4 font-mono text-xs leading-relaxed">{s.code}</pre>
+              <h2 className="font-semibold">
+                <span className="mr-2 font-mono text-primary">{i + 1}.</span>
+                {s.title}
+              </h2>
+              <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-surface p-4 font-mono text-xs leading-relaxed">
+                {s.code}
+              </pre>
             </li>
           ))}
         </ol>

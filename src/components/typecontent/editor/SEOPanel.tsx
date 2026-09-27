@@ -20,9 +20,17 @@ interface Props {
   onFocusKeyword: (v: string) => void;
 }
 
-export function SEOPanel({ seo, enabled, metaDescription, onMetaDescription, focusKeyword, onFocusKeyword }: Props) {
+export function SEOPanel({
+  seo,
+  enabled,
+  metaDescription,
+  onMetaDescription,
+  focusKeyword,
+  onFocusKeyword,
+}: Props) {
   const [open, setOpen] = useState<string | null>(null);
-  const tone = seo.score >= 80 ? "text-success" : seo.score >= 50 ? "text-warning" : "text-destructive";
+  const tone =
+    seo.score >= 80 ? "text-success" : seo.score >= 50 ? "text-warning" : "text-destructive";
   const s = seo.stats;
 
   return (
@@ -72,9 +80,16 @@ export function SEOPanel({ seo, enabled, metaDescription, onMetaDescription, foc
                 >
                   {icon[c.status]}
                   <span className="flex-1">{c.label}</span>
-                  <ChevronDown className={cn("size-3.5 text-muted-foreground transition", open === c.id && "rotate-180")} />
+                  <ChevronDown
+                    className={cn(
+                      "size-3.5 text-muted-foreground transition",
+                      open === c.id && "rotate-180",
+                    )}
+                  />
                 </button>
-                {open === c.id && <p className="px-8 pb-2.5 text-xs text-muted-foreground">{c.detail}</p>}
+                {open === c.id && (
+                  <p className="px-8 pb-2.5 text-xs text-muted-foreground">{c.detail}</p>
+                )}
               </li>
             ))}
           </ul>

@@ -216,7 +216,8 @@ See also: [content status reference](/docs/status).
 
 const changelog: DemoDoc = {
   title: "TypeContent v0.1.0",
-  metaDescription: "First public release of TypeContent: one editor, six content types, deterministic SEO analysis.",
+  metaDescription:
+    "First public release of TypeContent: one editor, six content types, deterministic SEO analysis.",
   focusKeyword: "release",
   metadata: { version: "v0.1.0", releaseDate: "2026-09-25", tags: ["New", "Improvement"] },
   markdown: `

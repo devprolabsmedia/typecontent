@@ -1,10 +1,5 @@
 import { markdownToPlainText, parseMarkdown } from "@/lib/markdown/markdown";
-import type {
-  ContentStats,
-  ContentTypeDefinition,
-  SEOCheck,
-  SEOResult,
-} from "@/types/typecontent";
+import type { ContentStats, ContentTypeDefinition, SEOCheck, SEOResult } from "@/types/typecontent";
 
 /**
  * Deterministic SEO analyzer. No AI, no network, no React.

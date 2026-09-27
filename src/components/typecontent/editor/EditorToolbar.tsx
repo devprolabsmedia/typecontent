@@ -1,6 +1,21 @@
 import {
-  Bold, Code, Heading1, Heading2, Heading3, Image, Italic, Link2, List, ListOrdered,
-  Minus, Quote, Redo2, SquareCode, Strikethrough, Underline, Undo2,
+  Bold,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  Image,
+  Italic,
+  Link2,
+  List,
+  ListOrdered,
+  Minus,
+  Quote,
+  Redo2,
+  SquareCode,
+  Strikethrough,
+  Underline,
+  Undo2,
 } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -8,7 +23,11 @@ import type { MarkdownCommandId } from "@/core/content/markdown-commands";
 import { cn } from "@/lib/utils";
 import type { EditorMode } from "@/types/typecontent";
 
-const groups: { id: MarkdownCommandId; label: string; icon: ComponentType<{ className?: string }> }[][] = [
+const groups: {
+  id: MarkdownCommandId;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}[][] = [
   [
     { id: "bold", label: "Bold", icon: Bold },
     { id: "italic", label: "Italic", icon: Italic },
@@ -45,7 +64,15 @@ interface Props {
 const btn =
   "grid size-8 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent";
 
-export function EditorToolbar({ onCommand, onUndo, onRedo, canUndo, canRedo, mode, onModeChange }: Props) {
+export function EditorToolbar({
+  onCommand,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
+  mode,
+  onModeChange,
+}: Props) {
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-border px-2 py-1.5">
       <button className={btn} onClick={onUndo} disabled={!canUndo} aria-label="Undo" title="Undo">
@@ -57,7 +84,13 @@ export function EditorToolbar({ onCommand, onUndo, onRedo, canUndo, canRedo, mod
       {groups.map((g, i) => (
         <div key={i} className="flex items-center gap-0.5 border-l border-border pl-1">
           {g.map(({ id, label, icon: Icon }) => (
-            <button key={id} className={btn} onClick={() => onCommand(id)} aria-label={label} title={label}>
+            <button
+              key={id}
+              className={btn}
+              onClick={() => onCommand(id)}
+              aria-label={label}
+              title={label}
+            >
               <Icon className="size-4" />
             </button>
           ))}

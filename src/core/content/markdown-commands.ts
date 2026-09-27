@@ -43,11 +43,20 @@ function wrap(sel: TextSelection, before: string, after = before, placeholder = 
       sel.value.slice(0, sel.start - before.length) +
       selected +
       sel.value.slice(sel.end + after.length);
-    return { value, start: sel.start - before.length, end: sel.start - before.length + selected.length };
+    return {
+      value,
+      start: sel.start - before.length,
+      end: sel.start - before.length + selected.length,
+    };
   }
 
-  const value = sel.value.slice(0, sel.start) + before + selected + after + sel.value.slice(sel.end);
-  return { value, start: sel.start + before.length, end: sel.start + before.length + selected.length };
+  const value =
+    sel.value.slice(0, sel.start) + before + selected + after + sel.value.slice(sel.end);
+  return {
+    value,
+    start: sel.start + before.length,
+    end: sel.start + before.length + selected.length,
+  };
 }
 
 function lineBounds(value: string, start: number, end: number) {
