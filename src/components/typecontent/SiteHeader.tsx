@@ -28,7 +28,7 @@ export function SiteHeader() {
               key={n.to}
               to={n.to}
               activeOptions={{ exact: true }}
-              className="shrink-0 whitespace-nowrap rounded-md px-2 py-1.5 text-muted sm:px-3-foreground transition-colors hover:text-foreground"
+              className="shrink-0 whitespace-nowrap rounded-md px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
               activeProps={{ className: "bg-secondary text-foreground" }}
             >
               {n.label}
