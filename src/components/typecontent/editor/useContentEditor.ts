@@ -1,9 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import {
-  applyMarkdownCommand,
-  type MarkdownCommandId,
-} from "@/core/content/markdown-commands";
+import { applyMarkdownCommand, type MarkdownCommandId } from "@/core/content/markdown-commands";
 import { getDemoDoc } from "@/core/content/demo-content";
 import { getContentType } from "@/core/content-types/registry";
 import { analyzeSEO } from "@/core/analyzers/seo";
@@ -16,6 +13,19 @@ interface Snapshot {
 
 const MAX_HISTORY = 100;
 
+interface Draft extends Snapshot {
+  metaDescription: string;
+  focusKeyword: string;
+  metadata: Metadata;
+  status: ContentStatus;
+}
+
+const STATUSES: readonly ContentStatus[] = ["draft", "review", "published"];
+
+function toStatus(value: MetadataValue | undefined): ContentStatus {
+  return STATUSES.find((s) => s === value) ?? "draft";
+}
+
 export function useContentEditor(initialContentTypeId: string) {
   const [contentTypeId, setContentTypeId] = useState(initialContentTypeId);
   const initial = getDemoDoc(initialContentTypeId);
@@ -25,7 +35,7 @@ export function useContentEditor(initialContentTypeId: string) {
   const [metaDescription, setMetaDescription] = useState(initial.metaDescription);
   const [focusKeyword, setFocusKeyword] = useState(initial.focusKeyword);
   const [metadata, setMetadata] = useState<Metadata>(initial.metadata);
-  const [status, setStatus] = useState<ContentStatus>("draft");
+  const [status, setStatus] = useState<ContentStatus>(toStatus(initial.metadata["status"]));
 
   const past = useRef<Snapshot[]>([]);
   const future = useRef<Snapshot[]>([]);
@@ -106,25 +116,43 @@ export function useContentEditor(initialContentTypeId: string) {
     [commit, markdown],
   );
 
-  const changeContentType = useCallback((nextId: string) => {
-    const doc = getDemoDoc(nextId);
-    setContentTypeId(nextId);
-    setTitleState(doc.title);
-    setMarkdownState(doc.markdown);
-    setMetaDescription(doc.metaDescription);
-    setFocusKeyword(doc.focusKeyword);
-    setMetadata(doc.metadata);
-    setStatus((doc.metadata.status as ContentStatus) ?? "draft");
-    past.current = [];
-    future.current = [];
-    setHistoryVersion((v) => v + 1);
-  }, []);
+  /** Per-type drafts so switching types never overwrites another type's content. */
+  const drafts = useRef<Map<string, Draft>>(new Map());
+
+  const changeContentType = useCallback(
+    (nextId: string) => {
+      if (nextId === contentTypeId) return;
+      drafts.current.set(contentTypeId, {
+        title,
+        markdown,
+        metaDescription,
+        focusKeyword,
+        metadata,
+        status,
+      });
+      const demo = getDemoDoc(nextId);
+      const doc: Draft = drafts.current.get(nextId) ?? {
+        ...demo,
+        status: toStatus(demo.metadata["status"]),
+      };
+      setContentTypeId(nextId);
+      setTitleState(doc.title);
+      setMarkdownState(doc.markdown);
+      setMetaDescription(doc.metaDescription);
+      setFocusKeyword(doc.focusKeyword);
+      setMetadata(doc.metadata);
+      setStatus(doc.status);
+      past.current = [];
+      future.current = [];
+      setHistoryVersion((v) => v + 1);
+    },
+    [contentTypeId, focusKeyword, markdown, metaDescription, metadata, status, title],
+  );
 
   const updateMetadata = useCallback((key: string, value: MetadataValue) => {
     setMetadata((prev) => ({ ...prev, [key]: value }));
-    if (key === "status" && typeof value === "string") setStatus(value as ContentStatus);
+    if (key === "status") setStatus(toStatus(value));
   }, []);
-
   const contentType = getContentType(contentTypeId);
 
   const seo = useMemo(

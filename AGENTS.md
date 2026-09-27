@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Content title is stored separately from the Markdown body and rendered as the only H1; bodies start at H2. Why: avoids duplicate titles and keeps one content model across modes.
+- Editor keeps per-content-type drafts in memory when switching types. Why: switching must never overwrite another type's content.

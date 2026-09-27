@@ -30,14 +30,7 @@ export type ContentFeature =
 export type ContentFeatures = Partial<Record<ContentFeature, boolean>>;
 
 export type MetadataFieldKind =
-  | "text"
-  | "textarea"
-  | "select"
-  | "tags"
-  | "date"
-  | "switch"
-  | "image"
-  | "number";
+  "text" | "textarea" | "select" | "tags" | "date" | "switch" | "image" | "number";
 
 export interface MetadataFieldDef {
   /** Key inside Content.metadata */

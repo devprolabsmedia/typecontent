@@ -2,7 +2,14 @@ import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { SITE } from "@/core/content/site";
 
 function Snippet({ label, code }: { label: string; code: string }) {
@@ -28,13 +35,25 @@ function Snippet({ label, code }: { label: string; code: string }) {
   );
 }
 
-export function CopyToProjectDialog({ contentTypeId, title, markdown }: { contentTypeId: string; title: string; markdown: string }) {
+export function CopyToProjectDialog({
+  contentTypeId,
+  title,
+  markdown,
+}: {
+  contentTypeId: string;
+  title: string;
+  markdown: string;
+}) {
   const usage = `import { ContentEditor } from "${SITE.packageName}";
 
 export function Editor() {
   return <ContentEditor contentType="${contentTypeId}" />;
 }`;
-  const json = JSON.stringify({ contentTypeId, title, markdown: markdown.slice(0, 160) + (markdown.length > 160 ? "…" : "") }, null, 2);
+  const json = JSON.stringify(
+    { contentTypeId, title, markdown: markdown.slice(0, 160) + (markdown.length > 160 ? "…" : "") },
+    null,
+    2,
+  );
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -43,7 +62,9 @@ export function Editor() {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Add this editor to your project</DialogTitle>
-          <DialogDescription>Install the package, drop in the component, and pick a content type.</DialogDescription>
+          <DialogDescription>
+            Install the package, drop in the component, and pick a content type.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <Snippet label="Install" code={`bun add ${SITE.packageName}`} />

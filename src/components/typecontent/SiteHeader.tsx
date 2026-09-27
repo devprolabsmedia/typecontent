@@ -12,23 +12,26 @@ const nav = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-6 px-4">
+      <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-3 px-4 md:gap-6">
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <span className="grid size-6 place-items-center rounded bg-primary font-mono text-xs text-primary-foreground">
             T
           </span>
           {SITE.name}
-          <span className="rounded border border-border px-1.5 font-mono text-[10px] text-muted-foreground">
+          <span className="hidden rounded border border-border px-1.5 sm:inline font-mono text-[10px] text-muted-foreground">
             {SITE.version}
           </span>
         </Link>
-        <nav className="flex items-center gap-1 text-sm">
+        <nav
+          aria-label="Main"
+          className="flex min-w-0 items-center gap-0.5 overflow-x-auto text-sm"
+        >
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
               activeOptions={{ exact: true }}
-              className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              className="shrink-0 whitespace-nowrap rounded-md px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
               activeProps={{ className: "bg-secondary text-foreground" }}
             >
               {n.label}
@@ -39,9 +42,11 @@ export function SiteHeader() {
           href={SITE.githubUrl}
           target="_blank"
           rel="noreferrer"
-          className="ml-auto inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          aria-label="TypeContent on GitHub"
+          className="ml-auto inline-flex shrink-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
-          <Github className="size-4" /> GitHub
+          <Github className="size-4" aria-hidden="true" />
+          <span className="hidden sm:inline">GitHub</span>
         </a>
       </div>
     </header>

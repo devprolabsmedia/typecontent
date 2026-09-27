@@ -28,9 +28,7 @@ const blog: DemoDoc = {
     excerpt:
       "Everything we learned shipping a TypeScript SaaS: boundaries that hold, a content layer you own, and a deploy story that stays boring.",
   },
-  markdown: `# How to Build a SaaS with TypeScript
-
-Most SaaS products die of architecture, not of demand. The team ships fast for
+  markdown: `Most SaaS products die of architecture, not of demand. The team ships fast for
 six weeks, then every new feature starts touching five files that nobody wants
 to open. This is the setup we keep coming back to — boring in the right places,
 strict where it pays off.
@@ -102,9 +100,7 @@ const page: DemoDoc = {
     "TypeContent is an open-source content editor for SaaS builders: one editor, every content type, copied straight into your codebase.",
   focusKeyword: "content editor",
   metadata: { slug: "about", featuredImage: "" },
-  markdown: `# About TypeContent
-
-TypeContent started as an internal component. Every product we built needed a
+  markdown: `TypeContent started as an internal component. Every product we built needed a
 blog, then docs, then a changelog — and each one arrived with its own editor,
 its own metadata handling and its own half-finished SEO panel.
 
@@ -131,9 +127,7 @@ const docs: DemoDoc = {
     "Install TypeContent, register a content type and render your first document with the shared editor in under five minutes.",
   focusKeyword: "getting started",
   metadata: { version: "v1", navigation: "Auto", tableOfContents: true },
-  markdown: `# Getting Started with TypeContent
-
-TypeContent ships as source you copy into your own React application. There is
+  markdown: `TypeContent ships as source you copy into your own React application. There is
 no account, no runtime service and no vendor lock-in.
 
 ## Install
@@ -191,9 +185,7 @@ const kb: DemoDoc = {
     tags: ["Publishing", "Validation"],
     relatedArticles: ["editor-shortcuts", "content-status"],
   },
-  markdown: `# Why is my content not publishing?
-
-If the publish action completes but nothing appears on your site, work through
+  markdown: `If the publish action completes but nothing appears on your site, work through
 the checks below in order.
 
 ## 1. Required metadata
@@ -220,12 +212,11 @@ See also: [content status reference](/docs/status).
 
 const changelog: DemoDoc = {
   title: "TypeContent v0.1.0",
-  metaDescription: "First public release of TypeContent: one editor, six content types, deterministic SEO analysis.",
+  metaDescription:
+    "First public release of TypeContent: one editor, six content types, deterministic SEO analysis.",
   focusKeyword: "release",
   metadata: { version: "v0.1.0", releaseDate: "2026-09-25", tags: ["New", "Improvement"] },
-  markdown: `# TypeContent v0.1.0
-
-First public release. The editor, the content-type registry and the SEO
+  markdown: `First public release. The editor, the content-type registry and the SEO
 analyzer are all in place.
 
 ## New
@@ -260,9 +251,7 @@ const course: DemoDoc = {
     lessons: ["Architecture", "Content layer", "Billing", "Deploying to the edge"],
     instructor: "Alex Rivera",
   },
-  markdown: `# Building Your First SaaS
-
-Four modules, roughly three hours, one working product at the end. You need
+  markdown: `Four modules, roughly three hours, one working product at the end. You need
 working TypeScript and React; everything else is covered here.
 
 ## Module 1 — Architecture
