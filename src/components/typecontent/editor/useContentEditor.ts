@@ -35,7 +35,7 @@ export function useContentEditor(initialContentTypeId: string) {
   const [metaDescription, setMetaDescription] = useState(initial.metaDescription);
   const [focusKeyword, setFocusKeyword] = useState(initial.focusKeyword);
   const [metadata, setMetadata] = useState<Metadata>(initial.metadata);
-  const [status, setStatus] = useState<ContentStatus>(toStatus(initial.metadata.status));
+  const [status, setStatus] = useState<ContentStatus>(toStatus(initial.metadata["status"]));
 
   const past = useRef<Snapshot[]>([]);
   const future = useRef<Snapshot[]>([]);
@@ -133,7 +133,7 @@ export function useContentEditor(initialContentTypeId: string) {
       const demo = getDemoDoc(nextId);
       const doc: Draft = drafts.current.get(nextId) ?? {
         ...demo,
-        status: toStatus(demo.metadata.status),
+        status: toStatus(demo.metadata["status"]),
       };
       setContentTypeId(nextId);
       setTitleState(doc.title);
