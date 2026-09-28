@@ -149,6 +149,20 @@ export function useContentEditor(initialContentTypeId: string) {
     [contentTypeId, focusKeyword, markdown, metaDescription, metadata, status, title],
   );
 
+  /** Commit a new markdown value (e.g. from a slash command) and place the caret. */
+  const applyEdit = useCallback(
+    (value: string, caret: number) => {
+      commit({ markdown: value });
+      lastTypedAt.current = 0;
+      requestAnimationFrame(() => {
+        const el = textareaRef.current;
+        el?.focus();
+        el?.setSelectionRange(caret, caret);
+      });
+    },
+    [commit],
+  );
+
   const updateMetadata = useCallback((key: string, value: MetadataValue) => {
     setMetadata((prev) => ({ ...prev, [key]: value }));
     if (key === "status") setStatus(toStatus(value));
@@ -178,6 +192,7 @@ export function useContentEditor(initialContentTypeId: string) {
     setStatus,
     seo,
     runCommand,
+    applyEdit,
     undo,
     redo,
     canUndo: past.current.length > 0,
