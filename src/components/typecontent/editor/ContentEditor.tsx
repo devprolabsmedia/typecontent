@@ -1,21 +1,23 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { contentTypes } from "@/core/content-types/registry";
-import { renderMarkdown } from "@/lib/markdown/markdown";
 import { cn } from "@/lib/utils";
 import type { EditorMode } from "@/types/typecontent";
 
 import { CopyToProjectDialog } from "./CopyToProjectDialog";
+import { DocumentRenderer } from "./DocumentRenderer";
 import { EditorToolbar } from "./EditorToolbar";
 import { MetadataPanel } from "./MetadataPanel";
 import { SEOPanel } from "./SEOPanel";
+import { SlashCommandMenu } from "./SlashCommandMenu";
 import { useContentEditor } from "./useContentEditor";
+import { useSlashCommands } from "./useSlashCommands";
 
 export function ContentEditor({ initialType = "blog" }: { initialType?: string }) {
   const ed = useContentEditor(initialType);
   const [mode, setMode] = useState<EditorMode>("split");
   const [tab, setTab] = useState<"seo" | "metadata">("seo");
-  const html = useMemo(() => renderMarkdown(ed.markdown), [ed.markdown]);
+  const slash = useSlashCommands(ed.textareaRef, ed.applyEdit);
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4 px-4 py-6">
