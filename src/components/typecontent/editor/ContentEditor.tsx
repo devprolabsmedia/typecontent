@@ -1,21 +1,23 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { contentTypes } from "@/core/content-types/registry";
-import { renderMarkdown } from "@/lib/markdown/markdown";
 import { cn } from "@/lib/utils";
 import type { EditorMode } from "@/types/typecontent";
 
 import { CopyToProjectDialog } from "./CopyToProjectDialog";
+import { DocumentRenderer } from "./DocumentRenderer";
 import { EditorToolbar } from "./EditorToolbar";
 import { MetadataPanel } from "./MetadataPanel";
 import { SEOPanel } from "./SEOPanel";
+import { SlashCommandMenu } from "./SlashCommandMenu";
 import { useContentEditor } from "./useContentEditor";
+import { useSlashCommands } from "./useSlashCommands";
 
 export function ContentEditor({ initialType = "blog" }: { initialType?: string }) {
   const ed = useContentEditor(initialType);
   const [mode, setMode] = useState<EditorMode>("split");
   const [tab, setTab] = useState<"seo" | "metadata">("seo");
-  const html = useMemo(() => renderMarkdown(ed.markdown), [ed.markdown]);
+  const slash = useSlashCommands(ed.textareaRef, ed.applyEdit);
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-4 px-4 py-6">
@@ -72,13 +74,20 @@ export function ContentEditor({ initialType = "blog" }: { initialType?: string }
             aria-label="Title"
             className="w-full border-b border-border bg-transparent px-5 py-4 text-2xl font-semibold tracking-tight outline-none"
           />
-          <div className={cn("grid md:min-h-[620px]", mode === "split" && "md:grid-cols-2")}>
+          <div className={cn("relative grid md:min-h-[620px]", mode === "split" && "md:grid-cols-2")}>
             {mode !== "preview" && (
               <textarea
                 ref={ed.textareaRef}
                 value={ed.markdown}
-                onChange={(e) => ed.setMarkdown(e.target.value)}
+                onChange={(e) => {
+                  ed.setMarkdown(e.target.value);
+                  slash.sync(e.target.value, e.target.selectionStart);
+                }}
                 onKeyDown={(e) => {
+                  if (slash.handleKey(e)) {
+                    e.preventDefault();
+                    return;
+                  }
                   const mod = e.metaKey || e.ctrlKey;
                   if (!mod) return;
                   const k = e.key.toLowerCase();
@@ -92,6 +101,12 @@ export function ContentEditor({ initialType = "blog" }: { initialType?: string }
                   } else if (k === "i") {
                     e.preventDefault();
                     ed.runCommand("italic");
+                  } else if (k === "u") {
+                    e.preventDefault();
+                    ed.runCommand("underline");
+                  } else if (k === "k") {
+                    e.preventDefault();
+                    ed.runCommand("link");
                   }
                 }}
                 spellCheck={false}
@@ -109,8 +124,17 @@ export function ContentEditor({ initialType = "blog" }: { initialType?: string }
                 <h1 className="mb-4 text-3xl font-semibold tracking-tight">
                   {ed.title || "Untitled"}
                 </h1>
-                <article className="tc-article" dangerouslySetInnerHTML={{ __html: html }} />
+                <DocumentRenderer markdown={ed.markdown} />
               </div>
+            )}
+            {slash.slash.open && mode !== "preview" && (
+              <SlashCommandMenu
+                commands={slash.commands}
+                active={slash.slash.active}
+                top={slash.slash.top}
+                left={slash.slash.left}
+                onSelect={slash.apply}
+              />
             )}
           </div>
         </div>

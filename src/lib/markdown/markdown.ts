@@ -13,9 +13,14 @@ export type MarkdownBlock =
   | { kind: "quote"; lines: string[] }
   | { kind: "list"; ordered: boolean; items: string[] }
   | { kind: "hr" }
-  | { kind: "image"; alt: string; src: string };
+  | { kind: "image"; alt: string; src: string }
+  | { kind: "callout"; variant: string; text: string };
+
+export type MarkdownBlockKind = MarkdownBlock["kind"];
 
 const IMAGE_ONLY = /^!\[([^\]]*)\]\(([^)\s]+)\)$/;
+const CALLOUT_OPEN = /^:::callout(?:\s+(\w+))?\s*$/;
+const CALLOUT_CLOSE = /^:::\s*$/;
 
 export function parseMarkdown(markdown: string): MarkdownBlock[] {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
@@ -43,6 +48,20 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
       }
       i += 1;
       blocks.push({ kind: "code", lang, code: code.join("\n") });
+      continue;
+    }
+
+    // Callout custom block: :::callout [variant] ... :::
+    const callout = line.match(CALLOUT_OPEN);
+    if (callout) {
+      const body: string[] = [];
+      i += 1;
+      while (i < lines.length && !CALLOUT_CLOSE.test(at(i))) {
+        body.push(at(i));
+        i += 1;
+      }
+      i += 1;
+      blocks.push({ kind: "callout", variant: callout[1] ?? "info", text: body.join("\n").trim() });
       continue;
     }
 
@@ -151,6 +170,7 @@ export function renderInline(input: string): string {
     .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
     .replace(/_([^_\n]+)_/g, "<em>$1</em>")
     .replace(/~~([^~]+)~~/g, "<del>$1</del>")
+    .replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/g, "<u>$1</u>")
     .replace(/\n/g, "<br />");
 
   return text.replace(/\uE000(\d+)\uE000/g, (_m, index: string) => `<code>${codes[+index]}</code>`);
@@ -184,11 +204,43 @@ export function renderMarkdown(markdown: string): string {
           return `<p><img src="${block.src}" alt="${escapeHtml(block.alt)}" /></p>`;
         case "hr":
           return "<hr />";
+        case "callout":
+          return `<aside data-callout="${escapeHtml(block.variant)}"><p>${renderInline(block.text)}</p></aside>`;
         default:
           return "";
       }
     })
     .join("\n");
+}
+
+/** Serialize a parsed document back to portable Markdown. */
+export function serializeMarkdown(blocks: MarkdownBlock[]): string {
+  return blocks
+    .map((block) => {
+      switch (block.kind) {
+        case "heading":
+          return `${"#".repeat(block.level)} ${block.text}`;
+        case "paragraph":
+          return block.text;
+        case "code":
+          return "```" + block.lang + "\n" + block.code + "\n```";
+        case "quote":
+          return block.lines.map((line) => `> ${line}`).join("\n");
+        case "list":
+          return block.items
+            .map((item, i) => (block.ordered ? `${i + 1}. ${item}` : `- ${item}`))
+            .join("\n");
+        case "image":
+          return `![${block.alt}](${block.src})`;
+        case "hr":
+          return "---";
+        case "callout":
+          return `:::callout ${block.variant}\n${block.text}\n:::`;
+        default:
+          return "";
+      }
+    })
+    .join("\n\n");
 }
 
 /** Plain text, used by word counts and keyword checks. */
