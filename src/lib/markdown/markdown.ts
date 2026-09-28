@@ -13,9 +13,14 @@ export type MarkdownBlock =
   | { kind: "quote"; lines: string[] }
   | { kind: "list"; ordered: boolean; items: string[] }
   | { kind: "hr" }
-  | { kind: "image"; alt: string; src: string };
+  | { kind: "image"; alt: string; src: string }
+  | { kind: "callout"; variant: string; text: string };
+
+export type MarkdownBlockKind = MarkdownBlock["kind"];
 
 const IMAGE_ONLY = /^!\[([^\]]*)\]\(([^)\s]+)\)$/;
+const CALLOUT_OPEN = /^:::callout(?:\s+(\w+))?\s*$/;
+const CALLOUT_CLOSE = /^:::\s*$/;
 
 export function parseMarkdown(markdown: string): MarkdownBlock[] {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
@@ -43,6 +48,20 @@ export function parseMarkdown(markdown: string): MarkdownBlock[] {
       }
       i += 1;
       blocks.push({ kind: "code", lang, code: code.join("\n") });
+      continue;
+    }
+
+    // Callout custom block: :::callout [variant] ... :::
+    const callout = line.match(CALLOUT_OPEN);
+    if (callout) {
+      const body: string[] = [];
+      i += 1;
+      while (i < lines.length && !CALLOUT_CLOSE.test(at(i))) {
+        body.push(at(i));
+        i += 1;
+      }
+      i += 1;
+      blocks.push({ kind: "callout", variant: callout[1] ?? "info", text: body.join("\n").trim() });
       continue;
     }
 
