@@ -37,7 +37,7 @@ function Index() {
           automatically.
         </p>
       </section>
-      <ContentEditor />
+      <ContentEditor showCopyToProject />
     </div>
   );
 }

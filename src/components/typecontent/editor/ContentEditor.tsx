@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { contentTypes } from "@/core/content-types/registry";
+import { contentTypes, registerContentType } from "@/core/content-types/registry";
 import { cn } from "@/lib/utils";
-import type { EditorMode } from "@/types/typecontent";
+import type { ContentTypeDefinition, EditorMode } from "@/types/typecontent";
 
 import { CopyToProjectDialog } from "./CopyToProjectDialog";
 import { DocumentRenderer } from "./DocumentRenderer";
@@ -10,11 +10,48 @@ import { EditorToolbar } from "./EditorToolbar";
 import { MetadataPanel } from "./MetadataPanel";
 import { SEOPanel } from "./SEOPanel";
 import { SlashCommandMenu } from "./SlashCommandMenu";
-import { useContentEditor } from "./useContentEditor";
+import { useContentEditor, type ContentEditorValue } from "./useContentEditor";
 import { useSlashCommands } from "./useSlashCommands";
 
-export function ContentEditor({ initialType = "blog" }: { initialType?: string }) {
-  const ed = useContentEditor(initialType);
+export interface ContentEditorChange extends Required<ContentEditorValue> {
+  contentTypeId: string;
+}
+
+export interface ContentEditorProps {
+  /** Built-in id ("blog") or a definition from defineContentType(). */
+  contentType?: string | ContentTypeDefinition;
+  /** Initial document. Defaults to demo content for built-in types. */
+  value?: ContentEditorValue;
+  onChange?: (content: ContentEditorChange) => void;
+  /** Show the content-type switcher. Defaults to true only in the playground usage. */
+  showTypeSwitcher?: boolean;
+  /** Show the "Copy to Project" button (playground only). */
+  showCopyToProject?: boolean;
+}
+
+export function ContentEditor({
+  contentType = "blog",
+  value,
+  onChange,
+  showTypeSwitcher = true,
+  showCopyToProject = false,
+}: ContentEditorProps) {
+  const typeId = typeof contentType === "string" ? contentType : contentType.id;
+  if (typeof contentType !== "string") registerContentType(contentType);
+  const ed = useContentEditor(typeId, value);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const { title, markdown, metaDescription, focusKeyword, metadata, contentTypeId } = ed;
+  useEffect(() => {
+    onChangeRef.current?.({
+      contentTypeId,
+      title,
+      markdown,
+      metaDescription,
+      focusKeyword,
+      metadata,
+    });
+  }, [contentTypeId, title, markdown, metaDescription, focusKeyword, metadata]);
   const [mode, setMode] = useState<EditorMode>("split");
   const [tab, setTab] = useState<"seo" | "metadata">("seo");
   const slash = useSlashCommands(ed.textareaRef, ed.applyEdit);
@@ -22,38 +59,38 @@ export function ContentEditor({ initialType = "blog" }: { initialType?: string }
   return (
     <div className="mx-auto max-w-[1600px] space-y-4 px-4 py-6">
       <div className="flex flex-wrap items-center gap-2">
-        <div
-          role="group"
-          aria-label="Content type"
-          className="flex max-w-full flex-wrap gap-1 rounded-lg border border-border bg-surface p-1"
-        >
-          {contentTypes.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => ed.changeContentType(t.id)}
-              aria-pressed={ed.contentTypeId === t.id}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                ed.contentTypeId === t.id && "bg-secondary text-foreground",
-              )}
-            >
-              {t.name}
-            </button>
-          ))}
-        </div>
+        {showTypeSwitcher && (
+          <div
+            role="group"
+            aria-label="Content type"
+            className="flex max-w-full flex-wrap gap-1 rounded-lg border border-border bg-surface p-1"
+          >
+            {contentTypes.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => ed.changeContentType(t.id)}
+                aria-pressed={ed.contentTypeId === t.id}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                  ed.contentTypeId === t.id && "bg-secondary text-foreground",
+                )}
+              >
+                {t.name}
+              </button>
+            ))}
+          </div>
+        )}
         <span
           aria-label={`Status: ${ed.status}`}
           className="rounded border border-border px-2 py-1 font-mono text-xs capitalize text-muted-foreground"
         >
           {ed.status}
         </span>
-        <div className="ml-auto">
-          <CopyToProjectDialog
-            contentTypeId={ed.contentTypeId}
-            title={ed.title}
-            markdown={ed.markdown}
-          />
-        </div>
+        {showCopyToProject && (
+          <div className="ml-auto">
+            <CopyToProjectDialog contentType={ed.contentType} />
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
@@ -74,7 +111,9 @@ export function ContentEditor({ initialType = "blog" }: { initialType?: string }
             aria-label="Title"
             className="w-full border-b border-border bg-transparent px-5 py-4 text-2xl font-semibold tracking-tight outline-none"
           />
-          <div className={cn("relative grid md:min-h-[620px]", mode === "split" && "md:grid-cols-2")}>
+          <div
+            className={cn("relative grid md:min-h-[620px]", mode === "split" && "md:grid-cols-2")}
+          >
             {mode !== "preview" && (
               <textarea
                 ref={ed.textareaRef}

@@ -227,12 +227,60 @@ export const contentTypes: ContentTypeDefinition[] = [
   course,
 ];
 
+export { blog, page, docs, knowledgeBase, changelog, course };
+
+/** Built-ins plus any user-defined types registered at runtime. */
 export const contentTypeRegistry: Record<string, ContentTypeDefinition> = Object.fromEntries(
   contentTypes.map((t) => [t.id, t]),
 );
 
 export function getContentType(id: string): ContentTypeDefinition {
   return contentTypeRegistry[id] ?? blog;
+}
+
+export function hasContentType(id: string): boolean {
+  return id in contentTypeRegistry;
+}
+
+/** Register a custom content type (e.g. "case-study") without touching the editor. */
+export function registerContentType(type: ContentTypeDefinition): ContentTypeDefinition {
+  contentTypeRegistry[type.id] = type;
+  return type;
+}
+
+export function listContentTypes(): ContentTypeDefinition[] {
+  return Object.values(contentTypeRegistry);
+}
+
+export interface DefineContentTypeInput {
+  id: string;
+  name: string;
+  description?: string;
+  icon?: string;
+  features?: ContentTypeDefinition["features"];
+  metadataGroups?: ContentTypeDefinition["metadataGroups"];
+  seo?: Partial<ContentTypeDefinition["seo"]>;
+}
+
+/** Build a complete ContentTypeDefinition with sensible defaults. Pure — does not register. */
+export function defineContentType(input: DefineContentTypeInput): ContentTypeDefinition {
+  const features = input.features ?? {};
+  return {
+    id: input.id,
+    slug: input.id,
+    name: input.name,
+    description: input.description ?? "",
+    icon: input.icon ?? "file-text",
+    features,
+    metadataGroups: input.metadataGroups ?? [],
+    seo: {
+      enabled: features.seo ?? false,
+      titleRange: [30, 60],
+      descriptionRange: [70, 160],
+      minWords: 150,
+      ...input.seo,
+    },
+  };
 }
 
 export function hasFeature(type: ContentTypeDefinition, feature: string): boolean {

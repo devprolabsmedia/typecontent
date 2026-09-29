@@ -296,7 +296,15 @@ export const demoContent: Record<string, DemoDoc> = {
 };
 
 export function getDemoDoc(contentTypeId: string): DemoDoc {
-  return demoContent[contentTypeId] ?? blog;
+  return (
+    demoContent[contentTypeId] ?? {
+      title: "",
+      markdown: "",
+      metaDescription: "",
+      focusKeyword: "",
+      metadata: {},
+    }
+  );
 }
 
 export function demoContentAsContent(contentTypeId: string): Content {
