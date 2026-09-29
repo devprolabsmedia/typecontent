@@ -26,9 +26,26 @@ function toStatus(value: MetadataValue | undefined): ContentStatus {
   return STATUSES.find((s) => s === value) ?? "draft";
 }
 
-export function useContentEditor(initialContentTypeId: string) {
+export interface ContentEditorValue {
+  title: string;
+  markdown: string;
+  metaDescription?: string;
+  focusKeyword?: string;
+  metadata?: Metadata;
+}
+
+export function useContentEditor(initialContentTypeId: string, initialValue?: ContentEditorValue) {
   const [contentTypeId, setContentTypeId] = useState(initialContentTypeId);
-  const initial = getDemoDoc(initialContentTypeId);
+  const demo = getDemoDoc(initialContentTypeId);
+  const initial = initialValue
+    ? {
+        title: initialValue.title,
+        markdown: initialValue.markdown,
+        metaDescription: initialValue.metaDescription ?? "",
+        focusKeyword: initialValue.focusKeyword ?? "",
+        metadata: initialValue.metadata ?? {},
+      }
+    : demo;
 
   const [title, setTitleState] = useState(initial.title);
   const [markdown, setMarkdownState] = useState(initial.markdown);
