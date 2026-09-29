@@ -39,11 +39,36 @@ export function listBlocks(): BlockDefinition[] {
 
 registerBlock({ type: "paragraph", name: "Paragraph", keywords: ["text", "plain"], template: "" });
 registerBlock({ type: "heading-1", name: "Heading 1", keywords: ["h1", "title"], template: "# " });
-registerBlock({ type: "heading-2", name: "Heading 2", keywords: ["h2", "subtitle"], template: "## " });
-registerBlock({ type: "heading-3", name: "Heading 3", keywords: ["h3", "section"], template: "### " });
-registerBlock({ type: "bullet-list", name: "Bullet List", keywords: ["ul", "unordered", "list"], template: "- " });
-registerBlock({ type: "ordered-list", name: "Numbered List", keywords: ["ol", "ordered", "list"], template: "1. " });
-registerBlock({ type: "quote", name: "Quote", keywords: ["blockquote", "citation"], template: "> " });
+registerBlock({
+  type: "heading-2",
+  name: "Heading 2",
+  keywords: ["h2", "subtitle"],
+  template: "## ",
+});
+registerBlock({
+  type: "heading-3",
+  name: "Heading 3",
+  keywords: ["h3", "section"],
+  template: "### ",
+});
+registerBlock({
+  type: "bullet-list",
+  name: "Bullet List",
+  keywords: ["ul", "unordered", "list"],
+  template: "- ",
+});
+registerBlock({
+  type: "ordered-list",
+  name: "Numbered List",
+  keywords: ["ol", "ordered", "list"],
+  template: "1. ",
+});
+registerBlock({
+  type: "quote",
+  name: "Quote",
+  keywords: ["blockquote", "citation"],
+  template: "> ",
+});
 registerBlock({
   type: "code-block",
   name: "Code Block",
@@ -58,7 +83,12 @@ registerBlock({
   template: "![alt text](https://)",
   caretOffset: 2,
 });
-registerBlock({ type: "divider", name: "Divider", keywords: ["hr", "rule", "separator"], template: "---" });
+registerBlock({
+  type: "divider",
+  name: "Divider",
+  keywords: ["hr", "rule", "separator"],
+  template: "---",
+});
 
 /* ---------- Example custom block ---------- */
 

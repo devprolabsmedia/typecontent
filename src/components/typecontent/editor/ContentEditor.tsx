@@ -43,7 +43,14 @@ export function ContentEditor({
   onChangeRef.current = onChange;
   const { title, markdown, metaDescription, focusKeyword, metadata, contentTypeId } = ed;
   useEffect(() => {
-    onChangeRef.current?.({ contentTypeId, title, markdown, metaDescription, focusKeyword, metadata });
+    onChangeRef.current?.({
+      contentTypeId,
+      title,
+      markdown,
+      metaDescription,
+      focusKeyword,
+      metadata,
+    });
   }, [contentTypeId, title, markdown, metaDescription, focusKeyword, metadata]);
   const [mode, setMode] = useState<EditorMode>("split");
   const [tab, setTab] = useState<"seo" | "metadata">("seo");
@@ -53,25 +60,25 @@ export function ContentEditor({
     <div className="mx-auto max-w-[1600px] space-y-4 px-4 py-6">
       <div className="flex flex-wrap items-center gap-2">
         {showTypeSwitcher && (
-        <div
-          role="group"
-          aria-label="Content type"
-          className="flex max-w-full flex-wrap gap-1 rounded-lg border border-border bg-surface p-1"
-        >
-          {contentTypes.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => ed.changeContentType(t.id)}
-              aria-pressed={ed.contentTypeId === t.id}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                ed.contentTypeId === t.id && "bg-secondary text-foreground",
-              )}
-            >
-              {t.name}
-            </button>
-          ))}
-        </div>
+          <div
+            role="group"
+            aria-label="Content type"
+            className="flex max-w-full flex-wrap gap-1 rounded-lg border border-border bg-surface p-1"
+          >
+            {contentTypes.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => ed.changeContentType(t.id)}
+                aria-pressed={ed.contentTypeId === t.id}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                  ed.contentTypeId === t.id && "bg-secondary text-foreground",
+                )}
+              >
+                {t.name}
+              </button>
+            ))}
+          </div>
         )}
         <span
           aria-label={`Status: ${ed.status}`}
@@ -104,7 +111,9 @@ export function ContentEditor({
             aria-label="Title"
             className="w-full border-b border-border bg-transparent px-5 py-4 text-2xl font-semibold tracking-tight outline-none"
           />
-          <div className={cn("relative grid md:min-h-[620px]", mode === "split" && "md:grid-cols-2")}>
+          <div
+            className={cn("relative grid md:min-h-[620px]", mode === "split" && "md:grid-cols-2")}
+          >
             {mode !== "preview" && (
               <textarea
                 ref={ed.textareaRef}

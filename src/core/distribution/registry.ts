@@ -5,13 +5,7 @@
  * Entries are plain data — the CLI never executes code from a registry entry.
  */
 
-export type ComponentId =
-  | "core"
-  | "markdown"
-  | "blocks"
-  | "seo"
-  | "content-types"
-  | "editor";
+export type ComponentId = "core" | "markdown" | "blocks" | "seo" | "content-types" | "editor";
 
 export interface RegistryEntry {
   id: ComponentId;
@@ -188,9 +182,11 @@ export function parseCliArgs(argv: string[]): CliCommand {
   if (cmd === "init") return { kind: "init", force };
   if (cmd === "list") return { kind: "list" };
   if (cmd === "add") {
-    if (rest.length === 0) return { kind: "error", message: "Specify a component, e.g. `add editor`." };
+    if (rest.length === 0)
+      return { kind: "error", message: "Specify a component, e.g. `add editor`." };
     const unknown = rest.filter((r) => !isComponentId(r));
-    if (unknown.length) return { kind: "error", message: `Unknown component: ${unknown.join(", ")}` };
+    if (unknown.length)
+      return { kind: "error", message: `Unknown component: ${unknown.join(", ")}` };
     return { kind: "add", components: rest as ComponentId[], force };
   }
   return { kind: "error", message: `Unknown command: ${cmd}` };

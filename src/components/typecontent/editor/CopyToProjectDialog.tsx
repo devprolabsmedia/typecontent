@@ -73,7 +73,11 @@ export function CopyToProjectDialog({ contentType }: { contentType: ContentTypeD
           </DialogDescription>
         </DialogHeader>
 
-        <div role="tablist" aria-label="Install path" className="flex gap-1 rounded-lg border border-border p-1 text-sm">
+        <div
+          role="tablist"
+          aria-label="Install path"
+          className="flex gap-1 rounded-lg border border-border p-1 text-sm"
+        >
           {(
             [
               ["cli", "Add with CLI"],
@@ -107,13 +111,18 @@ export function CopyToProjectDialog({ contentType }: { contentType: ContentTypeD
               </p>
               <Snippet label="Initialize" code="npx typecontent init" />
               <Snippet label="Add the editor" code="npx typecontent add editor" />
-              <Snippet label="Optional" code={"npx typecontent add seo\nnpx typecontent add blocks"} />
+              <Snippet
+                label="Optional"
+                code={"npx typecontent add seo\nnpx typecontent add blocks"}
+              />
             </>
           )}
           {path === "packages" && (
             <>
               <p className="text-xs text-muted-foreground">
-                <span className="rounded border border-border px-1.5 py-0.5 font-mono">Planned</span>{" "}
+                <span className="rounded border border-border px-1.5 py-0.5 font-mono">
+                  Planned
+                </span>{" "}
                 Package names are reserved in the architecture but not published to npm yet.
               </p>
               <Snippet label="Install" code="npm install @typecontent/editor @typecontent/core" />
@@ -127,7 +136,12 @@ export function CopyToProjectDialog({ contentType }: { contentType: ContentTypeD
             <>
               <p className="text-xs text-muted-foreground">
                 Copy these files from the{" "}
-                <a href={SITE.githubUrl} className="text-primary underline" target="_blank" rel="noreferrer">
+                <a
+                  href={SITE.githubUrl}
+                  className="text-primary underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   repository
                 </a>{" "}
                 into your app. They're plain React + TypeScript with no backend.
@@ -136,7 +150,8 @@ export function CopyToProjectDialog({ contentType }: { contentType: ContentTypeD
               <ul className="grid gap-1 text-xs text-muted-foreground">
                 {resolveComponents(["editor"]).map((e) => (
                   <li key={e.id}>
-                    <span className="font-mono text-foreground">{componentRegistry[e.id].id}</span> — {e.description}
+                    <span className="font-mono text-foreground">{componentRegistry[e.id].id}</span>{" "}
+                    — {e.description}
                   </li>
                 ))}
               </ul>

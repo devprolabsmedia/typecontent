@@ -11,3 +11,5 @@
 
 - Content title is stored separately from the Markdown body and rendered as the only H1; bodies start at H2. Why: avoids duplicate titles and keeps one content model across modes.
 - Editor keeps per-content-type drafts in memory when switching types. Why: switching must never overwrite another type's content.
+- Distribution (dialog, docs, CLI) reads one data-only component registry in src/core/distribution/registry.ts. Why: adding a component never requires CLI changes, and nothing from the registry is executed.
+- packages/* hold READMEs + CLI only; source stays in src/ until a real monorepo split. Why: clean boundaries without a premature migration.

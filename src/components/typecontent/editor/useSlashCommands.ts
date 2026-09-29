@@ -71,7 +71,10 @@ export function getCaretCoordinates(
 }
 
 /** Detect an active "/query" trigger ending at the caret. */
-export function detectSlash(value: string, caret: number): { query: string; slashIndex: number } | null {
+export function detectSlash(
+  value: string,
+  caret: number,
+): { query: string; slashIndex: number } | null {
   const lineStart = value.lastIndexOf("\n", caret - 1) + 1;
   const before = value.slice(lineStart, caret);
   const match = before.match(/^\/(\w*)$/);

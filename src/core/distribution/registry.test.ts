@@ -52,7 +52,10 @@ describe("cli", () => {
 
   it("never overwrites without --force", () => {
     const existing = new Set(["a.ts"]);
-    expect(planCopy(["a.ts", "b.ts"], existing, false)).toEqual({ write: ["b.ts"], skip: ["a.ts"] });
+    expect(planCopy(["a.ts", "b.ts"], existing, false)).toEqual({
+      write: ["b.ts"],
+      skip: ["a.ts"],
+    });
     expect(planCopy(["a.ts"], existing, true).write).toEqual(["a.ts"]);
   });
 
