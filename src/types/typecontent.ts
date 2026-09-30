@@ -98,13 +98,13 @@ export type LessonStatus = "draft" | "published";
 export interface Lesson {
   id: string;
   title: string;
-  slug?: string;
-  description?: string;
+  slug?: string | undefined;
+  description?: string | undefined;
   /** Minutes */
-  duration?: number;
+  duration?: number | undefined;
   /** 1-based position inside the course */
   order: number;
-  status?: LessonStatus;
+  status?: LessonStatus | undefined;
 }
 
 export type MetadataValue = string | number | boolean | string[] | Lesson[] | null;

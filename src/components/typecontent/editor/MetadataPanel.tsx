@@ -2,6 +2,15 @@ import { X } from "lucide-react";
 import { useState } from "react";
 
 import { hasFeature } from "@/core/content-types/registry";
+import {
+  addLesson,
+  createLesson,
+  isLessonList,
+  moveLesson,
+  removeLesson,
+  updateLesson,
+} from "@/core/content/lessons";
+import type { Lesson } from "@/types/typecontent";
 import type {
   ContentTypeDefinition,
   Metadata,
@@ -44,6 +53,95 @@ function TagsField({ value, onChange }: { value: string[]; onChange: (v: string[
   );
 }
 
+function LessonsField({ value, onChange }: { value: Lesson[]; onChange: (v: Lesson[]) => void }) {
+  return (
+    <div className="space-y-2">
+      <ol className="divide-y divide-border rounded-md border border-border">
+        {value.map((l, i) => (
+          <li key={l.id} className="space-y-1.5 p-2">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs text-muted-foreground">
+                {String(l.order).padStart(2, "0")}
+              </span>
+              <input
+                aria-label={`Lesson ${l.order} title`}
+                className={input}
+                value={l.title}
+                placeholder="Lesson title"
+                onChange={(e) => onChange(updateLesson(value, l.id, { title: e.target.value }))}
+              />
+            </div>
+            <div className="flex items-center gap-1.5 pl-6 text-xs">
+              <input
+                type="number"
+                aria-label="Duration in minutes"
+                className={input + " w-16"}
+                value={l.duration ?? ""}
+                onChange={(e) =>
+                  onChange(
+                    updateLesson(value, l.id, {
+                      duration: e.target.value === "" ? undefined : Number(e.target.value),
+                    }),
+                  )
+                }
+              />
+              <span className="text-muted-foreground">min</span>
+              <select
+                aria-label="Lesson status"
+                className={input + " w-24"}
+                value={l.status ?? "draft"}
+                onChange={(e) =>
+                  onChange(
+                    updateLesson(value, l.id, {
+                      status: e.target.value === "published" ? "published" : "draft",
+                    }),
+                  )
+                }
+              >
+                <option value="draft">draft</option>
+                <option value="published">published</option>
+              </select>
+              <button
+                type="button"
+                aria-label="Move up"
+                disabled={i === 0}
+                className="px-1 disabled:opacity-30"
+                onClick={() => onChange(moveLesson(value, l.id, -1))}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                aria-label="Move down"
+                disabled={i === value.length - 1}
+                className="px-1 disabled:opacity-30"
+                onClick={() => onChange(moveLesson(value, l.id, 1))}
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                aria-label={`Delete lesson ${l.order}`}
+                className="px-1 text-destructive"
+                onClick={() => onChange(removeLesson(value, l.id))}
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <button
+        type="button"
+        className="w-full rounded-md border border-dashed border-border py-1.5 text-xs text-muted-foreground hover:text-foreground"
+        onClick={() => onChange(addLesson(value, createLesson()))}
+      >
+        + Add Lesson
+      </button>
+    </div>
+  );
+}
+
 function Field({
   f,
   value,
@@ -80,7 +178,16 @@ function Field({
         </select>
       );
     case "tags":
-      return <TagsField value={Array.isArray(value) ? value : []} onChange={onChange} />;
+      return (
+        <TagsField
+          value={
+            Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : []
+          }
+          onChange={onChange}
+        />
+      );
+    case "collection":
+      return <LessonsField value={isLessonList(value) ? value : []} onChange={onChange} />;
     case "switch":
       return (
         <button
