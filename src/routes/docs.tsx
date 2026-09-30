@@ -27,7 +27,15 @@ export const Route = createFileRoute("/docs")({
   component: DocsPage,
 });
 
-function Section({ title, badge, children }: { title: string; badge?: string; children: React.ReactNode }) {
+function Section({
+  title,
+  badge,
+  children,
+}: {
+  title: string;
+  badge?: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="space-y-3">
       <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
@@ -64,7 +72,10 @@ function DocsPage() {
             <code className="font-mono">add</code> copies source into your project and never
             overwrites existing files unless you pass <code className="font-mono">--force</code>.
           </p>
-          <Snippet label="typecontent.config.ts" code={`export default {\n  componentsDir: "./src/components/typecontent",\n  contentTypesDir: "./src/content-types",\n  blocksDir: "./src/components/typecontent/blocks",\n};`} />
+          <Snippet
+            label="typecontent.config.ts"
+            code={`export default {\n  componentsDir: "./src/components/typecontent",\n  contentTypesDir: "./src/content-types",\n  blocksDir: "./src/components/typecontent/blocks",\n};`}
+          />
         </Section>
 
         <Section title="Option 2: Packages" badge="Planned — not on npm yet">

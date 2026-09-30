@@ -187,8 +187,14 @@ export function useContentEditor(initialContentTypeId: string, initialValue?: Co
   const contentType = getContentType(contentTypeId);
 
   const seo = useMemo(
-    () => analyzeSEO({ title, markdown, metaDescription, focusKeyword }, contentType),
-    [contentType, focusKeyword, markdown, metaDescription, title],
+    () =>
+      analyzeSEO({
+        contentType,
+        content: { title, markdown },
+        seo: { description: metaDescription, focusKeyword },
+        metadata,
+      }),
+    [contentType, focusKeyword, markdown, metaDescription, metadata, title],
   );
 
   return {

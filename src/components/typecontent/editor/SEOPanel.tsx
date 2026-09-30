@@ -2,12 +2,19 @@ import { CheckCircle2, ChevronDown, Info, TriangleAlert, XCircle } from "lucide-
 import { useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
-import type { SEOResult, SEOStatus } from "@/types/typecontent";
+import { seoCategoryLabels } from "@/core/analyzers/seo-rules";
+import type { SEOCategory, SEOCheck, SEOResult, SEOStatus } from "@/types/typecontent";
+
+function groups(seo: SEOResult): [SEOCategory, SEOCheck[]][] {
+  const map = new Map<SEOCategory, SEOCheck[]>();
+  for (const c of seo.checks) map.set(c.category, [...(map.get(c.category) ?? []), c]);
+  return [...map.entries()];
+}
 
 const icon: Record<SEOStatus, ReactNode> = {
   pass: <CheckCircle2 className="size-4 text-success" />,
   warning: <TriangleAlert className="size-4 text-warning" />,
-  fail: <XCircle className="size-4 text-destructive" />,
+  error: <XCircle className="size-4 text-destructive" />,
   info: <Info className="size-4 text-muted-foreground" />,
 };
 
@@ -37,7 +44,7 @@ export function SEOPanel({
     <div className="space-y-4">
       <div className="flex items-end justify-between">
         <div>
-          <div className="label-xs">SEO score</div>
+          <div className="label-xs">SEO quality score</div>
           {enabled ? (
             <div className={cn("font-mono text-4xl font-semibold", tone)}>{seo.score}</div>
           ) : (
@@ -72,27 +79,38 @@ export function SEOPanel({
             />
           </label>
           <ul className="divide-y divide-border rounded-md border border-border">
-            {seo.checks.map((c) => (
-              <li key={c.id}>
-                <button
-                  onClick={() => setOpen(open === c.id ? null : c.id)}
-                  className="flex w-full items-center gap-2 px-2.5 py-2 text-left text-sm hover:bg-accent/50"
-                >
-                  {icon[c.status]}
-                  <span className="flex-1">{c.label}</span>
-                  <ChevronDown
-                    className={cn(
-                      "size-3.5 text-muted-foreground transition",
-                      open === c.id && "rotate-180",
-                    )}
-                  />
-                </button>
-                {open === c.id && (
-                  <p className="px-8 pb-2.5 text-xs text-muted-foreground">{c.detail}</p>
-                )}
-              </li>
-            ))}
+            {groups(seo).flatMap(([cat, checks]) => [
+              <li key={`h-${cat}`} className="label-xs bg-secondary/40 px-2.5 py-1.5">
+                {seoCategoryLabels[cat]}
+              </li>,
+              ...checks.map((c) => (
+                <li key={c.id}>
+                  <button
+                    onClick={() => setOpen(open === c.id ? null : c.id)}
+                    className="flex w-full items-center gap-2 px-2.5 py-2 text-left text-sm hover:bg-accent/50"
+                  >
+                    {icon[c.status]}
+                    <span className="flex-1">{c.label}</span>
+                    <ChevronDown
+                      className={cn(
+                        "size-3.5 text-muted-foreground transition",
+                        open === c.id && "rotate-180",
+                      )}
+                    />
+                  </button>
+                  {open === c.id && (
+                    <div className="space-y-1 px-8 pb-2.5 text-xs text-muted-foreground">
+                      <p className="text-foreground">{c.message}</p>
+                      {c.details && <p>{c.details}</p>}
+                    </div>
+                  )}
+                </li>
+              )),
+            ])}
           </ul>
+          <p className="text-[11px] text-muted-foreground">
+            SEO quality score — an editorial indicator, not a ranking prediction.
+          </p>
         </>
       )}
 

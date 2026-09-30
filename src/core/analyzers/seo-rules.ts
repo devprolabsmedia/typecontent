@@ -128,8 +128,7 @@ const rules: SEORule[] = [
     label: "URL slug",
     category: "basic",
     weight: 8,
-    details:
-      "A short lowercase slug with hyphens makes the URL readable. Example: pricing-faq.",
+    details: "A short lowercase slug with hyphens makes the URL readable. Example: pricing-faq.",
     evaluate: (c) => {
       const slug = String(c.metadata["slug"] ?? "").trim();
       if (!slug) return warn("Missing — add a slug.");
@@ -167,7 +166,9 @@ const rules: SEORule[] = [
         if (prev && h.level > prev + 1) breaks += 1;
         prev = h.level;
       }
-      return breaks === 0 ? ok("Levels step down one at a time.") : warn(`${breaks} skipped level(s).`);
+      return breaks === 0
+        ? ok("Levels step down one at a time.")
+        : warn(`${breaks} skipped level(s).`);
     },
   },
   {
@@ -205,7 +206,9 @@ const rules: SEORule[] = [
       if (!k) return info("Not set — optional, but helps focus the article.");
       const n = c.plain.toLowerCase().split(k).length - 1;
       if (n === 0) return err(`"${k}" does not appear in the body.`);
-      return n <= 8 ? ok(`Used ${n} time${n === 1 ? "" : "s"}.`) : warn(`Used ${n} times — may read as stuffing.`);
+      return n <= 8
+        ? ok(`Used ${n} time${n === 1 ? "" : "s"}.`)
+        : warn(`Used ${n} times — may read as stuffing.`);
     },
   },
   {
@@ -225,12 +228,15 @@ const rules: SEORule[] = [
     label: "Keyword in introduction",
     category: "content",
     weight: 6,
-    details: "Mentioning the topic in the first paragraph tells readers they're in the right place.",
+    details:
+      "Mentioning the topic in the first paragraph tells readers they're in the right place.",
     evaluate: (c) => {
       const k = keyword(c);
       if (!k) return null;
       const intro = (paragraphs(c.markdown)[0] ?? "").toLowerCase();
-      return intro.includes(k) ? ok("Present in the first paragraph.") : warn("Not in the first paragraph.");
+      return intro.includes(k)
+        ? ok("Present in the first paragraph.")
+        : warn("Not in the first paragraph.");
     },
   },
   {
@@ -293,7 +299,9 @@ const rules: SEORule[] = [
     details: "Paragraphs over ~150 words are hard to scan on screens. Split long ones.",
     evaluate: (c) => {
       const long = paragraphs(c.markdown).filter((p) => p.split(/\s+/).length > 150).length;
-      return long === 0 ? ok("Paragraphs are a readable length.") : warn(`${long} long paragraph(s).`);
+      return long === 0
+        ? ok("Paragraphs are a readable length.")
+        : warn(`${long} long paragraph(s).`);
     },
   },
   {
@@ -307,7 +315,9 @@ const rules: SEORule[] = [
       if (sentences.length === 0) return null;
       const long = sentences.filter((s) => s.split(/\s+/).length > 25).length;
       const pct = Math.round((long / sentences.length) * 100);
-      return pct <= 25 ? ok(`${pct}% long sentences.`) : warn(`${pct}% of sentences exceed 25 words.`);
+      return pct <= 25
+        ? ok(`${pct}% long sentences.`)
+        : warn(`${pct}% of sentences exceed 25 words.`);
     },
   },
   {
@@ -332,7 +342,9 @@ const rules: SEORule[] = [
       const v = String(c.metadata["version"] ?? "").trim();
       const d = String(c.metadata["releaseDate"] ?? "").trim();
       if (v && d) return ok(`${v} · ${d}`);
-      return warn(`Missing ${[!v && "version", !d && "release date"].filter(Boolean).join(" and ")}.`);
+      return warn(
+        `Missing ${[!v && "version", !d && "release date"].filter(Boolean).join(" and ")}.`,
+      );
     },
   },
   {
@@ -368,7 +380,9 @@ const rules: SEORule[] = [
       const list = lessons(c);
       if (list.length === 0) return null;
       const missing = list.filter((l) => !l.title.trim()).length;
-      return missing === 0 ? ok("Every lesson has a title.") : warn(`${missing} lesson(s) missing a title.`);
+      return missing === 0
+        ? ok("Every lesson has a title.")
+        : warn(`${missing} lesson(s) missing a title.`);
     },
   },
   {

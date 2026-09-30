@@ -63,7 +63,13 @@ const blog: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [30, 60], descriptionRange: [70, 160], minWords: 300, rules: seoRuleSets.blog },
+  seo: {
+    enabled: true,
+    titleRange: [30, 60],
+    descriptionRange: [70, 160],
+    minWords: 300,
+    rules: seoRuleSets.blog,
+  },
 };
 
 const page: ContentTypeDefinition = {
@@ -83,7 +89,13 @@ const page: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [25, 60], descriptionRange: [70, 160], minWords: 150, rules: seoRuleSets.page },
+  seo: {
+    enabled: true,
+    titleRange: [25, 60],
+    descriptionRange: [70, 160],
+    minWords: 150,
+    rules: seoRuleSets.page,
+  },
 };
 
 const docs: ContentTypeDefinition = {
@@ -116,7 +128,13 @@ const docs: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [20, 60], descriptionRange: [60, 160], minWords: 200, rules: seoRuleSets.docs },
+  seo: {
+    enabled: true,
+    titleRange: [20, 60],
+    descriptionRange: [60, 160],
+    minWords: 200,
+    rules: seoRuleSets.docs,
+  },
 };
 
 const knowledgeBase: ContentTypeDefinition = {
@@ -149,7 +167,13 @@ const knowledgeBase: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [20, 60], descriptionRange: [60, 160], minWords: 120, rules: seoRuleSets.knowledgeBase },
+  seo: {
+    enabled: true,
+    titleRange: [20, 60],
+    descriptionRange: [60, 160],
+    minWords: 120,
+    rules: seoRuleSets.knowledgeBase,
+  },
 };
 
 const changelog: ContentTypeDefinition = {
@@ -176,7 +200,13 @@ const changelog: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [10, 60], descriptionRange: [50, 160], minWords: 60, rules: seoRuleSets.changelog },
+  seo: {
+    enabled: true,
+    titleRange: [10, 60],
+    descriptionRange: [50, 160],
+    minWords: 60,
+    rules: seoRuleSets.changelog,
+  },
 };
 
 const course: ContentTypeDefinition = {
@@ -246,7 +276,13 @@ const course: ContentTypeDefinition = {
       fields: [{ key: "lessons", label: "Lessons", kind: "collection", feature: "lessons" }],
     },
   ],
-  seo: { enabled: true, titleRange: [25, 60], descriptionRange: [70, 160], minWords: 250, rules: seoRuleSets.course },
+  seo: {
+    enabled: true,
+    titleRange: [25, 60],
+    descriptionRange: [70, 160],
+    minWords: 250,
+    rules: seoRuleSets.course,
+  },
 };
 
 export const contentTypes: ContentTypeDefinition[] = [
