@@ -241,15 +241,34 @@ recommended path for now.
 };
 
 const course: DemoDoc = {
-  title: "Building Your First SaaS",
+  title: "Build SaaS with TypeScript",
   metaDescription:
-    "A four-module course covering architecture, the content layer, billing and deployment for your first TypeScript SaaS.",
+    "A six-lesson course covering architecture, TypeScript, API design, the database layer and deployment for your first SaaS.",
   focusKeyword: "saas course",
   metadata: {
+    description:
+      "A hands-on course for developers who know React and want to ship a real TypeScript SaaS — from project architecture to a boring, reliable deploy.",
     difficulty: "Intermediate",
-    duration: 180,
-    lessons: ["Architecture", "Content layer", "Billing", "Deploying to the edge"],
+    duration: null,
     instructor: "Alex Rivera",
+    category: "Engineering",
+    tags: ["TypeScript", "SaaS"],
+    featuredImage: "",
+    lessons: [
+      ["Introduction", 8],
+      ["Project Architecture", 18],
+      ["TypeScript Fundamentals", 15],
+      ["API Design", 22],
+      ["Database Layer", 25],
+      ["Deployment", 14],
+    ].map(([title, duration], i) => ({
+      id: `demo-lesson-${i + 1}`,
+      title: String(title),
+      slug: String(title).toLowerCase().replace(/\s+/g, "-"),
+      duration: Number(duration),
+      order: i + 1,
+      status: i < 3 ? ("published" as const) : ("draft" as const),
+    })),
   },
   markdown: `Four modules, roughly three hours, one working product at the end. You need
 working TypeScript and React; everything else is covered here.

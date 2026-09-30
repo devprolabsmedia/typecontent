@@ -25,12 +25,25 @@ export type ContentFeature =
   | "lessons"
   | "courseMeta"
   | "difficulty"
-  | "duration";
+  | "duration"
+  | "instructor";
 
 export type ContentFeatures = Partial<Record<ContentFeature, boolean>>;
 
 export type MetadataFieldKind =
-  "text" | "textarea" | "select" | "tags" | "date" | "switch" | "image" | "number";
+  | "text"
+  | "textarea"
+  | "select"
+  | "multiselect"
+  | "tags"
+  | "date"
+  | "switch"
+  | "image"
+  | "number"
+  /** Planned: reference to other content by id/slug. Rendered as a tag list for now. */
+  | "relation"
+  /** Structured list of child items, e.g. course lessons. */
+  | "collection";
 
 export interface MetadataFieldDef {
   /** Key inside Content.metadata */
@@ -66,10 +79,35 @@ export interface ContentTypeDefinition {
     titleRange: [number, number];
     descriptionRange: [number, number];
     minWords: number;
+    /** Which SEO rules run for this type. One analyzer, configurable rules. */
+    rules: SEORuleId[];
   };
 }
 
-export type MetadataValue = string | number | boolean | string[] | null;
+/* ---------- Lessons (structured child content of a Course) ---------- */
+
+export type LessonStatus = "draft" | "published";
+
+/**
+ * A lesson is child content, not a metadata string. Designed so a future
+ * ContentAdapter can persist Course -> CourseLesson -> Lesson content and so
+ * a lesson body can later be edited with the same ContentEditor.
+ * Planned extensions: kind (video/article/quiz/assignment/resource), locked,
+ * prerequisites, completion state.
+ */
+export interface Lesson {
+  id: string;
+  title: string;
+  slug?: string;
+  description?: string;
+  /** Minutes */
+  duration?: number;
+  /** 1-based position inside the course */
+  order: number;
+  status?: LessonStatus;
+}
+
+export type MetadataValue = string | number | boolean | string[] | Lesson[] | null;
 
 export type Metadata = Record<string, MetadataValue>;
 
@@ -86,18 +124,66 @@ export interface Content {
   publishedAt?: string | null;
 }
 
-export type SEOStatus = "pass" | "warning" | "fail" | "info";
+/* ---------- SEO ---------- */
+
+/** SEO metadata lives apart from content-type metadata. */
+export interface SEOData {
+  /** Overrides the content title in search results. Falls back to the title. */
+  title?: string;
+  description?: string;
+  focusKeyword?: string;
+  /** Planned in the UI */
+  canonicalUrl?: string;
+  /** Planned in the UI */
+  noIndex?: boolean;
+  /** Planned in the UI */
+  ogImage?: string;
+}
+
+export type SEOStatus = "pass" | "warning" | "error" | "info";
+
+export type SEOCategory = "basic" | "content" | "links" | "media" | "readability" | "structure";
+
+export type SEORuleId =
+  | "title"
+  | "titleLength"
+  | "metaDescription"
+  | "metaDescriptionLength"
+  | "slug"
+  | "headingStructure"
+  | "headingHierarchy"
+  | "toc"
+  | "contentLength"
+  | "keyword"
+  | "keywordInTitle"
+  | "keywordInIntro"
+  | "internalLinks"
+  | "externalLinks"
+  | "emptyLinks"
+  | "imageAlt"
+  | "paragraphLength"
+  | "sentenceLength"
+  | "relatedContent"
+  | "releaseInfo"
+  | "courseDescription"
+  | "lessonCount"
+  | "lessonTitles"
+  | "lessonOrder";
 
 export interface SEOCheck {
-  id: string;
+  id: SEORuleId;
   label: string;
+  category: SEOCategory;
   status: SEOStatus;
-  /** Short explanation revealed when the check is expanded. */
-  detail: string;
+  /** One-line result, e.g. "Your title is 72 characters." */
+  message: string;
+  /** What it means / why it matters / what to do. */
+  details?: string;
   weight: number;
 }
 
 export interface SEOResult {
+  /** Editorial SEO quality score 0-100. Not a ranking prediction. */
   score: number;
   checks: SEOCheck[];
   stats: ContentStats;

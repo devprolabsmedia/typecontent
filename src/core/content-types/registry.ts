@@ -1,3 +1,4 @@
+import { seoRuleSets } from "@/core/analyzers/seo-rules";
 import type { ContentTypeDefinition } from "@/types/typecontent";
 
 /**
@@ -62,7 +63,7 @@ const blog: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [30, 60], descriptionRange: [70, 160], minWords: 300 },
+  seo: { enabled: true, titleRange: [30, 60], descriptionRange: [70, 160], minWords: 300, rules: seoRuleSets.blog },
 };
 
 const page: ContentTypeDefinition = {
@@ -82,7 +83,7 @@ const page: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [25, 60], descriptionRange: [70, 160], minWords: 150 },
+  seo: { enabled: true, titleRange: [25, 60], descriptionRange: [70, 160], minWords: 150, rules: seoRuleSets.page },
 };
 
 const docs: ContentTypeDefinition = {
@@ -115,7 +116,7 @@ const docs: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [20, 60], descriptionRange: [60, 160], minWords: 200 },
+  seo: { enabled: true, titleRange: [20, 60], descriptionRange: [60, 160], minWords: 200, rules: seoRuleSets.docs },
 };
 
 const knowledgeBase: ContentTypeDefinition = {
@@ -148,7 +149,7 @@ const knowledgeBase: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: true, titleRange: [20, 60], descriptionRange: [60, 160], minWords: 120 },
+  seo: { enabled: true, titleRange: [20, 60], descriptionRange: [60, 160], minWords: 120, rules: seoRuleSets.knowledgeBase },
 };
 
 const changelog: ContentTypeDefinition = {
@@ -157,7 +158,7 @@ const changelog: ContentTypeDefinition = {
   name: "Changelog",
   description: "Release notes keyed by version and release date.",
   icon: "git-commit-horizontal",
-  features: { version: true, releaseDate: true, tags: true },
+  features: { seo: true, version: true, releaseDate: true, tags: true },
   metadataGroups: [
     {
       id: "release",
@@ -175,21 +176,37 @@ const changelog: ContentTypeDefinition = {
       ],
     },
   ],
-  seo: { enabled: false, titleRange: [10, 60], descriptionRange: [50, 160], minWords: 60 },
+  seo: { enabled: true, titleRange: [10, 60], descriptionRange: [50, 160], minWords: 60, rules: seoRuleSets.changelog },
 };
 
 const course: ContentTypeDefinition = {
   id: "course",
   slug: "course",
   name: "Course",
-  description: "Structured lessons with difficulty and duration metadata.",
+  description: "Structured lessons with difficulty, duration and instructor metadata.",
   icon: "graduation-cap",
-  features: { seo: true, lessons: true, courseMeta: true, difficulty: true, duration: true },
+  features: {
+    seo: true,
+    lessons: true,
+    difficulty: true,
+    duration: true,
+    instructor: true,
+    featuredImage: true,
+    categories: true,
+    tags: true,
+  },
   metadataGroups: [
     {
       id: "course",
       label: "Course",
       fields: [
+        {
+          key: "description",
+          label: "Description",
+          kind: "textarea",
+          feature: "lessons",
+          placeholder: "Who it's for and what learners will build.",
+        },
         {
           key: "difficulty",
           label: "Difficulty",
@@ -203,19 +220,33 @@ const course: ContentTypeDefinition = {
           kind: "number",
           feature: "duration",
           placeholder: "180",
+          hint: "Leave empty to use the sum of lesson durations.",
         },
-        { key: "lessons", label: "Lessons", kind: "tags", feature: "lessons" },
         {
           key: "instructor",
           label: "Instructor",
           kind: "text",
-          feature: "courseMeta",
+          feature: "instructor",
           placeholder: "Alex",
         },
+        {
+          key: "category",
+          label: "Category",
+          kind: "select",
+          feature: "categories",
+          options: ["Engineering", "Product", "Design", "Business"],
+        },
+        { key: "tags", label: "Tags", kind: "tags", feature: "tags" },
+        { key: "featuredImage", label: "Featured image", kind: "image", feature: "featuredImage" },
       ],
     },
+    {
+      id: "lessons",
+      label: "Lessons",
+      fields: [{ key: "lessons", label: "Lessons", kind: "collection", feature: "lessons" }],
+    },
   ],
-  seo: { enabled: true, titleRange: [25, 60], descriptionRange: [70, 160], minWords: 250 },
+  seo: { enabled: true, titleRange: [25, 60], descriptionRange: [70, 160], minWords: 250, rules: seoRuleSets.course },
 };
 
 export const contentTypes: ContentTypeDefinition[] = [
@@ -278,6 +309,7 @@ export function defineContentType(input: DefineContentTypeInput): ContentTypeDef
       titleRange: [30, 60],
       descriptionRange: [70, 160],
       minWords: 150,
+      rules: seoRuleSets.default,
       ...input.seo,
     },
   };
@@ -296,8 +328,8 @@ export const featureLabels: Record<string, string> = {
   publishDate: "Publish date",
   excerpt: "Excerpt",
   slug: "Slug",
-  tableOfContents: "Table of contents",
-  version: "Version",
+  tableOfContents: "TOC",
+  version: "Versioning",
   navigation: "Navigation",
   relatedArticles: "Related articles",
   releaseDate: "Release date",
@@ -305,4 +337,5 @@ export const featureLabels: Record<string, string> = {
   courseMeta: "Course metadata",
   difficulty: "Difficulty",
   duration: "Duration",
+  instructor: "Instructor",
 };
