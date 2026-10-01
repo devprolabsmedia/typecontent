@@ -270,38 +270,31 @@ const course: DemoDoc = {
       status: i < 3 ? ("published" as const) : ("draft" as const),
     })),
   },
-  markdown: `Four modules, roughly three hours, one working product at the end. You need
+  markdown: `Six lessons, about two hours, one working product at the end. You need
 working TypeScript and React; everything else is covered here.
 
-## Module 1 — Architecture
+## What you will learn
 
-Draw the boundaries before writing code: UI, core, adapters. We build the
-skeleton and a single route.
+1. **Introduction** — the product we build and how the course is structured.
+2. **Project Architecture** — boundaries first: UI, core, adapters.
+3. **TypeScript Fundamentals** — the types that keep a SaaS codebase honest.
+4. **API Design** — server functions, validation and errors.
+5. **Database Layer** — modelling content as data behind an adapter.
+6. **Deployment** — shipping to the edge with preview environments.
 
-## Module 2 — The content layer
-
-Model content as data and reuse one editor for blog, docs and changelog.
-Includes the [content types guide](/content-types).
+## A taste of the content layer
 
 \`\`\`ts
 const post = await adapter.create({
   contentTypeId: "blog",
   title: "Hello world",
-  markdown: "# Hello world",
+  markdown: "## Hello world",
 });
 \`\`\`
 
-## Module 3 — Billing and accounts
-
-- Plans, trials and entitlement checks
-- Webhook handling that survives retries
-- Testing money without spending it
-
-## Module 4 — Deploying to the edge
+See the [content types guide](/content-types) for how one editor serves every type.
 
 > Deploys should be boring. If a release needs a runbook, automate the runbook.
-
-We finish on Cloudflare, with preview environments per branch.
 `,
 };
 
