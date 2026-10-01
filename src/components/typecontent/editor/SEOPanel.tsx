@@ -111,6 +111,12 @@ export function SEOPanel({
           <p className="text-[11px] text-muted-foreground">
             SEO quality score — an editorial indicator, not a ranking prediction.
           </p>
+          <div className="rounded-md border border-dashed border-border px-2.5 py-2 text-xs text-muted-foreground">
+            <span className="mr-1 rounded border border-border px-1.5 py-0.5 font-mono">
+              Planned
+            </span>
+            SEO title override, canonical URL, social image and noindex.
+          </div>
         </>
       )}
 
