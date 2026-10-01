@@ -82,6 +82,8 @@ export interface ContentTypeDefinition {
     /** Which SEO rules run for this type. One analyzer, configurable rules. */
     rules: SEORuleId[];
   };
+  /** Writing rule set (separate from SEO). Falls back to a default set. */
+  writing?: import("@/core/analyzers/writing").WritingConfig;
 }
 
 /* ---------- Lessons (structured child content of a Course) ---------- */
