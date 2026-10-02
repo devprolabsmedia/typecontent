@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Github } from "lucide-react";
 
-import tcLogoAsset from "@/assets/tc-logo.png.asset.json";
+import tcLogoUrl from "@/assets/tc-logo.png";
 import { SITE } from "@/core/content/site";
 
 const nav = [
@@ -25,7 +25,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-3 px-4 md:gap-6">
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
           <img
-            src={tcLogoAsset.url}
+            src={tcLogoUrl}
             alt=""
             className="size-6 rounded object-contain"
             aria-hidden="true"
