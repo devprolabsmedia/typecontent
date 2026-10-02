@@ -408,7 +408,7 @@ export const seoRules: Record<SEORuleId, SEORule> = Object.fromEntries(
 ) as Record<SEORuleId, SEORule>;
 
 export const seoCategoryLabels: Record<SEOCategory, string> = {
-  basic: "Basic SEO",
+  basic: "Search Appearance",
   content: "Content",
   structure: "Structure",
   links: "Links",

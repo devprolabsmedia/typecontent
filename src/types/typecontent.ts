@@ -188,6 +188,8 @@ export interface SEOResult {
   /** Editorial SEO quality score 0-100. Not a ranking prediction. */
   score: number;
   checks: SEOCheck[];
+  /** Categories present in this result, in rule order. */
+  categories: SEOCategory[];
   stats: ContentStats;
 }
 

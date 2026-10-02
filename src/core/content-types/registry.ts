@@ -1,3 +1,4 @@
+import { writingRuleSets } from "@/core/analyzers/writing";
 import { seoRuleSets } from "@/core/analyzers/seo-rules";
 import type { ContentTypeDefinition } from "@/types/typecontent";
 
@@ -63,6 +64,7 @@ const blog: ContentTypeDefinition = {
       ],
     },
   ],
+  writing: writingRuleSets.blog,
   seo: {
     enabled: true,
     titleRange: [30, 60],
@@ -89,6 +91,7 @@ const page: ContentTypeDefinition = {
       ],
     },
   ],
+  writing: writingRuleSets.page,
   seo: {
     enabled: true,
     titleRange: [25, 60],
@@ -128,6 +131,7 @@ const docs: ContentTypeDefinition = {
       ],
     },
   ],
+  writing: writingRuleSets.docs,
   seo: {
     enabled: true,
     titleRange: [20, 60],
@@ -167,6 +171,7 @@ const knowledgeBase: ContentTypeDefinition = {
       ],
     },
   ],
+  writing: writingRuleSets.knowledgeBase,
   seo: {
     enabled: true,
     titleRange: [20, 60],
@@ -200,6 +205,7 @@ const changelog: ContentTypeDefinition = {
       ],
     },
   ],
+  writing: writingRuleSets.changelog,
   seo: {
     enabled: true,
     titleRange: [10, 60],
@@ -276,6 +282,7 @@ const course: ContentTypeDefinition = {
       fields: [{ key: "lessons", label: "Lessons", kind: "collection", feature: "lessons" }],
     },
   ],
+  writing: writingRuleSets.course,
   seo: {
     enabled: true,
     titleRange: [25, 60],
