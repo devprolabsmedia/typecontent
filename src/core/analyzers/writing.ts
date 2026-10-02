@@ -8,7 +8,8 @@ import type { ContentTypeDefinition, SEOStatus } from "@/types/typecontent";
  * signals, not perfect linguistic analysis.
  */
 
-export type WritingCategory = "readability" | "structure" | "clarity" | "repetition" | "completeness";
+export type WritingCategory =
+  "readability" | "structure" | "clarity" | "repetition" | "completeness";
 
 export type WritingRuleId =
   | "avgSentence"
@@ -112,7 +113,8 @@ const TRANSITIONS = [
   "also",
   "then",
 ];
-const PASSIVE = /\b(is|are|was|were|be|been|being)\s+(\w+ed|built|done|made|given|shown|written|taken|seen|known|found|sent|kept|held)\b/i;
+const PASSIVE =
+  /\b(is|are|was|were|be|been|being)\s+(\w+ed|built|done|made|given|shown|written|taken|seen|known|found|sent|kept|held)\b/i;
 
 export const sentencesOf = (text: string) =>
   text
@@ -120,7 +122,8 @@ export const sentencesOf = (text: string) =>
     .map((s) => s.trim())
     .filter((s) => s.split(/\s+/).length >= 3);
 const wordsOf = (text: string) => text.toLowerCase().match(/[a-z][a-z'-]*/g) ?? [];
-const syllables = (w: string) => Math.max(1, (w.replace(/e$/, "").match(/[aeiouy]+/g) ?? []).length);
+const syllables = (w: string) =>
+  Math.max(1, (w.replace(/e$/, "").match(/[aeiouy]+/g) ?? []).length);
 
 interface Ctx {
   blocks: MarkdownBlock[];
@@ -140,9 +143,21 @@ type Rule = {
   evaluate: (c: Ctx) => Outcome | null;
 };
 
-const pass = (message: string, details?: string): Outcome => ({ status: "pass", message, ...(details ? { details } : {}) });
-const warn = (message: string, details?: string): Outcome => ({ status: "warning", message, ...(details ? { details } : {}) });
-const info = (message: string, details?: string): Outcome => ({ status: "info", message, ...(details ? { details } : {}) });
+const pass = (message: string, details?: string): Outcome => ({
+  status: "pass",
+  message,
+  ...(details ? { details } : {}),
+});
+const warn = (message: string, details?: string): Outcome => ({
+  status: "warning",
+  message,
+  ...(details ? { details } : {}),
+});
+const info = (message: string, details?: string): Outcome => ({
+  status: "info",
+  message,
+  ...(details ? { details } : {}),
+});
 
 const avg = (n: number, d: number) => (d ? Math.round((n / d) * 10) / 10 : 0);
 const long = (s: string) => s.split(/\s+/).length > 35;
@@ -167,7 +182,9 @@ const rules: Rule[] = [
     evaluate: (c) => {
       if (!c.sentences.length) return null;
       const a = avg(c.words.length, c.sentences.length);
-      return a <= 20 ? pass(`${a} words per sentence.`) : warn(`${a} words per sentence.`, "Aim for 20 or fewer on average.");
+      return a <= 20
+        ? pass(`${a} words per sentence.`)
+        : warn(`${a} words per sentence.`, "Aim for 20 or fewer on average.");
     },
   },
   {
@@ -178,7 +195,12 @@ const rules: Rule[] = [
     evaluate: (c) => {
       if (!c.sentences.length) return null;
       const n = c.sentences.filter(long).length;
-      return n === 0 ? pass("No sentences over 35 words.") : warn(`${n} sentence${n > 1 ? "s are" : " is"} longer than 35 words.`, "Consider splitting them.");
+      return n === 0
+        ? pass("No sentences over 35 words.")
+        : warn(
+            `${n} sentence${n > 1 ? "s are" : " is"} longer than 35 words.`,
+            "Consider splitting them.",
+          );
     },
   },
   {
@@ -188,7 +210,10 @@ const rules: Rule[] = [
     weight: 1,
     evaluate: (c) => {
       if (!c.paragraphs.length) return null;
-      const a = avg(c.paragraphs.reduce((s, p) => s + sentencesOf(p).length, 0), c.paragraphs.length);
+      const a = avg(
+        c.paragraphs.reduce((s, p) => s + sentencesOf(p).length, 0),
+        c.paragraphs.length,
+      );
       return a <= 4 ? pass(`${a} sentences per paragraph.`) : warn(`${a} sentences per paragraph.`);
     },
   },
@@ -200,7 +225,9 @@ const rules: Rule[] = [
     evaluate: (c) => {
       if (!c.paragraphs.length) return null;
       const n = c.paragraphs.filter((p) => p.split(/\s+/).length > 150).length;
-      return n === 0 ? pass("No paragraphs over 150 words.") : warn(`${n} paragraph${n > 1 ? "s are" : " is"} unusually long.`);
+      return n === 0
+        ? pass("No paragraphs over 150 words.")
+        : warn(`${n} paragraph${n > 1 ? "s are" : " is"} unusually long.`);
     },
   },
   {
@@ -210,8 +237,15 @@ const rules: Rule[] = [
     weight: 1,
     evaluate: (c) => {
       if (c.words.length < 50) return null;
-      const pct = Math.round((c.words.filter((w) => syllables(w) >= 4).length / c.words.length) * 100);
-      return pct <= 10 ? pass(`${pct}% of words have 4+ syllables.`) : warn(`${pct}% of words have 4+ syllables.`, "Estimated by syllable count; technical terms may be unavoidable.");
+      const pct = Math.round(
+        (c.words.filter((w) => syllables(w) >= 4).length / c.words.length) * 100,
+      );
+      return pct <= 10
+        ? pass(`${pct}% of words have 4+ syllables.`)
+        : warn(
+            `${pct}% of words have 4+ syllables.`,
+            "Estimated by syllable count; technical terms may be unavoidable.",
+          );
     },
   },
   {
@@ -221,8 +255,15 @@ const rules: Rule[] = [
     weight: 1,
     evaluate: (c) => {
       if (c.sentences.length < 5) return null;
-      const pct = Math.round((c.sentences.filter((s) => PASSIVE.test(s)).length / c.sentences.length) * 100);
-      return pct <= 15 ? pass(`About ${pct}% of sentences.`) : warn(`About ${pct}% of sentences.`, "Detected by a simple pattern; may miss or over-count some cases.");
+      const pct = Math.round(
+        (c.sentences.filter((s) => PASSIVE.test(s)).length / c.sentences.length) * 100,
+      );
+      return pct <= 15
+        ? pass(`About ${pct}% of sentences.`)
+        : warn(
+            `About ${pct}% of sentences.`,
+            "Detected by a simple pattern; may miss or over-count some cases.",
+          );
     },
   },
   {
@@ -232,9 +273,16 @@ const rules: Rule[] = [
     weight: 1,
     evaluate: (c) => {
       if (c.sentences.length < 8) return null;
-      const n = c.sentences.filter((s) => TRANSITIONS.some((t) => s.toLowerCase().includes(t))).length;
+      const n = c.sentences.filter((s) =>
+        TRANSITIONS.some((t) => s.toLowerCase().includes(t)),
+      ).length;
       const pct = Math.round((n / c.sentences.length) * 100);
-      return pct >= 15 ? pass(`${pct}% of sentences use transitions.`) : info(`${pct}% of sentences use transitions.`, "Words like 'however' or 'for example' help readers follow along.");
+      return pct >= 15
+        ? pass(`${pct}% of sentences use transitions.`)
+        : info(
+            `${pct}% of sentences use transitions.`,
+            "Words like 'however' or 'for example' help readers follow along.",
+          );
     },
   },
   {
@@ -245,7 +293,9 @@ const rules: Rule[] = [
     evaluate: (c) => {
       const first = c.blocks[0];
       if (!first) return warn("The document is empty.");
-      return first.kind === "paragraph" ? pass("Opens with an introduction.") : warn("Starts without an introductory paragraph.");
+      return first.kind === "paragraph"
+        ? pass("Opens with an introduction.")
+        : warn("Starts without an introductory paragraph.");
     },
   },
   {
@@ -255,7 +305,12 @@ const rules: Rule[] = [
     weight: 1,
     evaluate: (c) => {
       const n = c.blocks.filter((b) => b.kind === "heading" && b.level === 1).length;
-      return n === 0 ? pass("Title is the only H1.") : warn(`${n} extra H1 heading${n > 1 ? "s" : ""} in the body.`, "The title is already the H1; start body sections at H2.");
+      return n === 0
+        ? pass("Title is the only H1.")
+        : warn(
+            `${n} extra H1 heading${n > 1 ? "s" : ""} in the body.`,
+            "The title is already the H1; start body sections at H2.",
+          );
     },
   },
   {
@@ -281,7 +336,14 @@ const rules: Rule[] = [
     weight: 1,
     evaluate: (c) => {
       const big = c.sections.filter((s) => s.words > 600);
-      return big.length ? warn(`"${big[0]?.title}" section is unusually long.`, "Consider splitting with sub-headings.") : c.sections.length ? pass("Sections are balanced.") : null;
+      return big.length
+        ? warn(
+            `"${big[0]?.title}" section is unusually long.`,
+            "Consider splitting with sub-headings.",
+          )
+        : c.sections.length
+          ? pass("Sections are balanced.")
+          : null;
     },
   },
   {
@@ -292,7 +354,9 @@ const rules: Rule[] = [
     evaluate: (c) => {
       if (c.sections.length < 2) return null;
       const last = c.sections.at(-1)?.title.toLowerCase() ?? "";
-      return /conclu|summary|wrap|next step|takeaway|final/.test(last) ? pass("Ends with a conclusion.") : warn("No conclusion detected.");
+      return /conclu|summary|wrap|next step|takeaway|final/.test(last)
+        ? pass("Ends with a conclusion.")
+        : warn("No conclusion detected.");
     },
   },
   {
@@ -303,7 +367,9 @@ const rules: Rule[] = [
     evaluate: (c) => {
       if (c.sections.length < 3) return null;
       const n = c.sections.filter((s) => s.words < 15).length;
-      return n > c.sections.length / 2 ? warn(`${n} headings have very little content.`) : pass("Headings have content.");
+      return n > c.sections.length / 2
+        ? warn(`${n} headings have very little content.`)
+        : pass("Headings have content.");
     },
   },
   {
@@ -318,7 +384,9 @@ const rules: Rule[] = [
         const w = (j: number) => wordsOf(c.sentences[j] ?? "")[0];
         if (w(i) && w(i) === w(i - 1) && w(i) === w(i - 2)) runs++;
       }
-      return runs ? warn(`${runs} run${runs > 1 ? "s" : ""} of 3+ sentences start with the same word.`) : pass("Sentence openings vary.");
+      return runs
+        ? warn(`${runs} run${runs > 1 ? "s" : ""} of 3+ sentences start with the same word.`)
+        : pass("Sentence openings vary.");
     },
   },
   {
@@ -331,7 +399,9 @@ const rules: Rule[] = [
       const text = ` ${c.words.join(" ")} `;
       const n = FILLERS.reduce((s, f) => s + text.split(` ${f} `).length - 1, 0);
       const per = (n / c.words.length) * 100;
-      return per <= 1.5 ? pass(`${n} filler word${n === 1 ? "" : "s"}.`) : warn(`${n} filler words (e.g. "very", "just", "basically").`);
+      return per <= 1.5
+        ? pass(`${n} filler word${n === 1 ? "" : "s"}.`)
+        : warn(`${n} filler words (e.g. "very", "just", "basically").`);
     },
   },
   {
@@ -343,7 +413,10 @@ const rules: Rule[] = [
       if (c.words.length < 100) return null;
       const r = repeated(c.words);
       return r.length
-        ? warn(r.map((t) => `"${t.term}" — ${t.count}`).join(", "), "Repetition of key terms can be intentional; consider synonyms where it reads awkwardly.")
+        ? warn(
+            r.map((t) => `"${t.term}" — ${t.count}`).join(", "),
+            "Repetition of key terms can be intentional; consider synonyms where it reads awkwardly.",
+          )
         : pass("No unusually frequent terms.");
     },
   },
@@ -362,16 +435,32 @@ const rules: Rule[] = [
       );
       return missing.length === 0
         ? pass("All expected parts are present.")
-        : info(`Consider: ${missing.map((m) => m.label).join(", ")}.`, "Editorial signals based on headings — not every piece needs all of them.");
+        : info(
+            `Consider: ${missing.map((m) => m.label).join(", ")}.`,
+            "Editorial signals based on headings — not every piece needs all of them.",
+          );
     },
   },
 ];
 
 const byId = Object.fromEntries(rules.map((r) => [r.id, r])) as Record<WritingRuleId, Rule>;
 
-const readability: WritingRuleId[] = ["avgSentence", "longSentences", "avgParagraph", "longParagraphs", "complexWords", "passiveVoice", "transitions"];
+const readability: WritingRuleId[] = [
+  "avgSentence",
+  "longSentences",
+  "avgParagraph",
+  "longParagraphs",
+  "complexWords",
+  "passiveVoice",
+  "transitions",
+];
 const structure: WritingRuleId[] = ["introduction", "h1Count", "headingHierarchy", "longSections"];
-const clarity: WritingRuleId[] = ["thinSections", "repeatedOpenings", "fillerPhrases", "repetition"];
+const clarity: WritingRuleId[] = [
+  "thinSections",
+  "repeatedOpenings",
+  "fillerPhrases",
+  "repetition",
+];
 
 /** Rule sets referenced from ContentTypeDefinition.writing. */
 export const writingRuleSets = {
@@ -388,13 +477,18 @@ export const writingRuleSets = {
     completeness: [
       { label: "overview", keywords: ["overview", "introduction", "about"] },
       { label: "prerequisites", keywords: ["prerequisite", "requirement", "before you"] },
-      { label: "instructions", keywords: ["install", "setup", "set up", "usage", "getting started", "step"] },
+      {
+        label: "instructions",
+        keywords: ["install", "setup", "set up", "usage", "getting started", "step"],
+      },
       { label: "examples", keywords: ["example"], codeCounts: true },
       { label: "troubleshooting", keywords: ["troubleshoot", "faq", "common issue", "error"] },
     ],
   },
   knowledgeBase: { rules: [...readability, ...structure, ...clarity] },
-  changelog: { rules: ["avgSentence", "longSentences", "h1Count", "headingHierarchy", "repetition"] },
+  changelog: {
+    rules: ["avgSentence", "longSentences", "h1Count", "headingHierarchy", "repetition"],
+  },
   course: {
     rules: [...readability, ...structure, ...clarity, "completeness"],
     completeness: [
@@ -406,7 +500,9 @@ export const writingRuleSets = {
   },
 } satisfies Record<string, WritingConfig>;
 
-export const defaultWritingConfig: WritingConfig = { rules: [...readability, ...structure, ...clarity] };
+export const defaultWritingConfig: WritingConfig = {
+  rules: [...readability, ...structure, ...clarity],
+};
 
 export function analyzeWriting(input: {
   contentType: ContentTypeDefinition;
@@ -419,7 +515,13 @@ export function analyzeWriting(input: {
     .map((b) => markdownToPlainText(b.text));
   const prose = blocks
     .flatMap((b) =>
-      b.kind === "paragraph" || b.kind === "callout" ? [b.text] : b.kind === "list" ? b.items : b.kind === "quote" ? b.lines : [],
+      b.kind === "paragraph" || b.kind === "callout"
+        ? [b.text]
+        : b.kind === "list"
+          ? b.items
+          : b.kind === "quote"
+            ? b.lines
+            : [],
     )
     .map(markdownToPlainText);
   const sentences = prose.flatMap(sentencesOf);
@@ -430,7 +532,12 @@ export function analyzeWriting(input: {
     if (b.kind === "heading") sections.push({ title: b.text, level: b.level, words: 0 });
     else {
       const cur = sections.at(-1);
-      const text = b.kind === "paragraph" || b.kind === "callout" ? b.text : b.kind === "list" ? b.items.join(" ") : "";
+      const text =
+        b.kind === "paragraph" || b.kind === "callout"
+          ? b.text
+          : b.kind === "list"
+            ? b.items.join(" ")
+            : "";
       if (cur) cur.words += wordsOf(text).length;
     }
   }
@@ -445,14 +552,18 @@ export function analyzeWriting(input: {
 
   const scored = checks.filter((c) => c.status !== "info");
   const total = scored.reduce((s, c) => s + c.weight, 0);
-  const earned = scored.reduce((s, c) => s + c.weight * (c.status === "pass" ? 1 : c.status === "warning" ? 0.5 : 0), 0);
+  const earned = scored.reduce(
+    (s, c) => s + c.weight * (c.status === "pass" ? 1 : c.status === "warning" ? 0.5 : 0),
+    0,
+  );
 
   const cats = (Object.keys(writingCategoryLabels) as WritingCategory[])
     .map((id) => {
       const list = checks.filter((c) => c.category === id && c.status !== "info");
       if (!checks.some((c) => c.category === id)) return null;
       const bad = list.filter((c) => c.status !== "pass").length;
-      const status: "good" | "ok" | "attention" = bad === 0 ? "good" : bad === 1 ? "ok" : "attention";
+      const status: "good" | "ok" | "attention" =
+        bad === 0 ? "good" : bad === 1 ? "ok" : "attention";
       return { id, label: writingCategoryLabels[id], status };
     })
     .filter((c): c is NonNullable<typeof c> => c !== null);
@@ -466,9 +577,14 @@ export function analyzeWriting(input: {
       avgSentenceWords: avg(words.length, sentences.length),
       longSentences: sentences.filter(long).length,
       paragraphs: paragraphs.length,
-      avgParagraphSentences: avg(paragraphs.reduce((s, p) => s + sentencesOf(p).length, 0), paragraphs.length),
+      avgParagraphSentences: avg(
+        paragraphs.reduce((s, p) => s + sentencesOf(p).length, 0),
+        paragraphs.length,
+      ),
       longParagraphs: paragraphs.filter((p) => p.split(/\s+/).length > 150).length,
-      passivePercent: sentences.length ? Math.round((sentences.filter((s) => PASSIVE.test(s)).length / sentences.length) * 100) : 0,
+      passivePercent: sentences.length
+        ? Math.round((sentences.filter((s) => PASSIVE.test(s)).length / sentences.length) * 100)
+        : 0,
       repeatedTerms: words.length >= 100 ? repeated(words) : [],
     },
   };

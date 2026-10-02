@@ -1,4 +1,4 @@
-import { markdownToPlainText, parseMarkdown } from "@/lib/markdown/markdown";
+import { markdownToPlainText, parseMarkdown, type MarkdownBlock } from "@/lib/markdown/markdown";
 import type {
   ContentStats,
   ContentTypeDefinition,
@@ -19,13 +19,15 @@ export interface SEOInput {
   content: { title: string; markdown: string };
   seo?: SEOData;
   metadata?: Metadata;
+  /** Pre-parsed canonical document, shared with the Writing analyzer. */
+  document?: MarkdownBlock[];
 }
 
 const LINK_RE = /\[[^\]]*\]\(([^)\s]+)\)/g;
 const IMAGE_RE = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
 
-export function computeStats(markdown: string): ContentStats {
-  const blocks = parseMarkdown(markdown);
+export function computeStats(markdown: string, document?: MarkdownBlock[]): ContentStats {
+  const blocks = document ?? parseMarkdown(markdown);
   const plain = markdownToPlainText(markdown);
   const words = plain ? plain.split(/\s+/).filter(Boolean).length : 0;
 
@@ -63,7 +65,7 @@ export function computeStats(markdown: string): ContentStats {
 
 /** One analyzer; the content type decides which rules run. */
 export function analyzeSEO(input: SEOInput): SEOResult {
-  const stats = computeStats(input.content.markdown ?? "");
+  const stats = computeStats(input.content.markdown ?? "", input.document);
   const checks = runRules(input.contentType.seo.rules, {
     type: input.contentType,
     title: (input.seo?.title?.trim() || input.content.title || "").trim(),
@@ -73,7 +75,8 @@ export function analyzeSEO(input: SEOInput): SEOResult {
     metadata: input.metadata ?? {},
     stats,
   });
-  return { score: scoreChecks(checks), checks, stats };
+  const categories = [...new Set(checks.map((c) => c.category))];
+  return { score: scoreChecks(checks), checks, categories, stats };
 }
 
 /** pass = full weight, warning = half, error = zero, info = excluded. */
