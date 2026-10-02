@@ -52,11 +52,20 @@ export function SiteHeader() {
           ))}
         </nav>
         <a
+          href={SITE.threadsUrl}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="TypeContent on Threads"
+          className="ml-auto inline-flex shrink-0 items-center p-2 text-muted-foreground hover:text-foreground"
+        >
+          <ThreadsIcon className="size-4" />
+        </a>
+        <a
           href={SITE.githubUrl}
           target="_blank"
           rel="noreferrer"
           aria-label="TypeContent on GitHub"
-          className="ml-auto inline-flex shrink-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex shrink-0 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <Github className="size-4" aria-hidden="true" />
           <span className="hidden sm:inline">GitHub</span>
