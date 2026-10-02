@@ -24,9 +24,12 @@ export function SiteHeader() {
     <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-3 px-4 md:gap-6">
         <Link to="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="grid size-6 place-items-center rounded bg-primary font-mono text-xs text-primary-foreground">
-            T
-          </span>
+          <img
+            src={tcLogoAsset.url}
+            alt=""
+            className="size-6 rounded object-contain"
+            aria-hidden="true"
+          />
           {SITE.name}
           <span className="hidden rounded border border-border px-1.5 sm:inline font-mono text-[10px] text-muted-foreground">
             {SITE.version}
