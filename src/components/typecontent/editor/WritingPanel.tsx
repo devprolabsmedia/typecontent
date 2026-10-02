@@ -13,14 +13,22 @@ const icon: Record<SEOStatus, ReactNode> = {
 };
 
 const statusLabel = { good: "Good", ok: "Fair", attention: "Needs attention" } as const;
-const statusTone = { good: "text-success", ok: "text-warning", attention: "text-destructive" } as const;
+const statusTone = {
+  good: "text-success",
+  ok: "text-warning",
+  attention: "text-destructive",
+} as const;
 
 /** Renders a WritingResult. No analysis logic lives here. */
 export function WritingPanel({ writing }: { writing: WritingResult }) {
   const [open, setOpen] = useState<string | null>(null);
   const s = writing.stats;
   const tone =
-    writing.score >= 80 ? "text-success" : writing.score >= 50 ? "text-warning" : "text-destructive";
+    writing.score >= 80
+      ? "text-success"
+      : writing.score >= 50
+        ? "text-warning"
+        : "text-destructive";
 
   return (
     <div className="space-y-4">
@@ -75,7 +83,10 @@ export function WritingPanel({ writing }: { writing: WritingResult }) {
                     <span className="flex-1">{c.label}</span>
                     <ChevronDown
                       aria-hidden
-                      className={cn("size-3.5 text-muted-foreground transition", open === c.id && "rotate-180")}
+                      className={cn(
+                        "size-3.5 text-muted-foreground transition",
+                        open === c.id && "rotate-180",
+                      )}
                     />
                   </button>
                   {open === c.id && (
@@ -91,8 +102,8 @@ export function WritingPanel({ writing }: { writing: WritingResult }) {
         )}
       </ul>
       <p className="text-[11px] text-muted-foreground">
-        Writing quality — simple, local heuristics. Separate from the SEO score; never rewrites
-        your text.
+        Writing quality — simple, local heuristics. Separate from the SEO score; never rewrites your
+        text.
       </p>
     </div>
   );

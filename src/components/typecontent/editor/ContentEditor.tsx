@@ -9,6 +9,9 @@ import { DocumentRenderer } from "./DocumentRenderer";
 import { EditorToolbar } from "./EditorToolbar";
 import { MetadataPanel } from "./MetadataPanel";
 import { SEOPanel } from "./SEOPanel";
+import { WritingPanel } from "./WritingPanel";
+import { exportHTML, htmlToMarkdown } from "@/core/content/io";
+import { parseMarkdown } from "@/lib/markdown/markdown";
 import { SlashCommandMenu } from "./SlashCommandMenu";
 import { useContentEditor, type ContentEditorValue } from "./useContentEditor";
 import { useSlashCommands } from "./useSlashCommands";
@@ -53,7 +56,29 @@ export function ContentEditor({
     });
   }, [contentTypeId, title, markdown, metaDescription, focusKeyword, metadata]);
   const [mode, setMode] = useState<EditorMode>("split");
-  const [tab, setTab] = useState<"seo" | "metadata">("seo");
+  const [tab, setTab] = useState<"seo" | "writing" | "metadata">("seo");
+  const [format, setFormat] = useState<"markdown" | "html">("markdown");
+  const [html, setHtml] = useState("");
+  const fromHtml = useRef(false);
+  const [copied, setCopied] = useState<string | null>(null);
+  useEffect(() => {
+    if (format !== "html") return;
+    if (fromHtml.current) {
+      fromHtml.current = false;
+      return;
+    }
+    setHtml(exportHTML(parseMarkdown(markdown)));
+  }, [format, markdown]);
+  const copy = async (kind: "HTML" | "Markdown") => {
+    const text = kind === "HTML" ? exportHTML(parseMarkdown(markdown)) : markdown;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(kind);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      setCopied(null);
+    }
+  };
   const slash = useSlashCommands(ed.textareaRef, ed.applyEdit);
 
   return (
@@ -86,8 +111,19 @@ export function ContentEditor({
         >
           {ed.status}
         </span>
+        <div className="ml-auto flex gap-1" aria-live="polite">
+          {(["HTML", "Markdown"] as const).map((k) => (
+            <button
+              key={k}
+              onClick={() => void copy(k)}
+              className="rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              {copied === k ? "✓ Copied" : `Copy ${k}`}
+            </button>
+          ))}
+        </div>
         {showCopyToProject && (
-          <div className="ml-auto">
+          <div>
             <CopyToProjectDialog contentType={ed.contentType} />
           </div>
         )}
@@ -104,6 +140,33 @@ export function ContentEditor({
             mode={mode}
             onModeChange={setMode}
           />
+          {mode !== "preview" && (
+            <div
+              role="tablist"
+              aria-label="Editing format"
+              className="flex gap-1 border-b border-border px-3 py-1.5 text-xs"
+            >
+              {(["markdown", "html"] as const).map((f) => (
+                <button
+                  key={f}
+                  role="tab"
+                  aria-selected={format === f}
+                  onClick={() => setFormat(f)}
+                  className={cn(
+                    "rounded px-2.5 py-1 text-muted-foreground",
+                    format === f && "bg-secondary text-foreground",
+                  )}
+                >
+                  {f === "markdown" ? "Markdown" : "HTML"}
+                </button>
+              ))}
+              {format === "html" && (
+                <span className="ml-auto self-center text-muted-foreground">
+                  Pasted HTML is cleaned; scripts and unsafe links are removed.
+                </span>
+              )}
+            </div>
+          )}
           <input
             value={ed.title}
             onChange={(e) => ed.setTitle(e.target.value)}
@@ -114,7 +177,21 @@ export function ContentEditor({
           <div
             className={cn("relative grid md:min-h-[620px]", mode === "split" && "md:grid-cols-2")}
           >
-            {mode !== "preview" && (
+            {mode !== "preview" && format === "html" && (
+              <textarea
+                value={html}
+                onChange={(e) => {
+                  setHtml(e.target.value);
+                  fromHtml.current = true;
+                  ed.setMarkdown(htmlToMarkdown(e.target.value));
+                }}
+                spellCheck={false}
+                wrap="off"
+                aria-label="HTML"
+                className="h-[420px] w-full resize-none overflow-auto bg-transparent p-5 font-mono text-sm leading-relaxed outline-none md:h-[620px]"
+              />
+            )}
+            {mode !== "preview" && format === "markdown" && (
               <textarea
                 ref={ed.textareaRef}
                 value={ed.markdown}
@@ -166,7 +243,7 @@ export function ContentEditor({
                 <DocumentRenderer markdown={ed.markdown} />
               </div>
             )}
-            {slash.slash.open && mode !== "preview" && (
+            {slash.slash.open && mode !== "preview" && format === "markdown" && (
               <SlashCommandMenu
                 commands={slash.commands}
                 active={slash.slash.active}
@@ -184,7 +261,7 @@ export function ContentEditor({
             aria-label="Side panel"
             className="flex border-b border-border text-sm"
           >
-            {(["seo", "metadata"] as const).map((t) => (
+            {(["seo", "writing", "metadata"] as const).map((t) => (
               <button
                 key={t}
                 role="tab"
@@ -197,7 +274,7 @@ export function ContentEditor({
                   tab === t && "border-b-2 border-primary text-foreground",
                 )}
               >
-                {t === "seo" ? "SEO" : "Metadata"}
+                {t === "seo" ? "SEO" : t === "writing" ? "Writing" : "Metadata"}
               </button>
             ))}
           </div>
@@ -211,6 +288,8 @@ export function ContentEditor({
                 focusKeyword={ed.focusKeyword}
                 onFocusKeyword={ed.setFocusKeyword}
               />
+            ) : tab === "writing" ? (
+              <WritingPanel writing={ed.writing} />
             ) : (
               <MetadataPanel
                 type={ed.contentType}
