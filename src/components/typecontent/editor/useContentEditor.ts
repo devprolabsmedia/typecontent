@@ -1,9 +1,11 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react";
 
 import { applyMarkdownCommand, type MarkdownCommandId } from "@/core/content/markdown-commands";
 import { getDemoDoc } from "@/core/content/demo-content";
 import { getContentType } from "@/core/content-types/registry";
 import { analyzeSEO } from "@/core/analyzers/seo";
+import { analyzeWriting } from "@/core/analyzers/writing";
+import { parseMarkdown } from "@/lib/markdown/markdown";
 import type { ContentStatus, Metadata, MetadataValue } from "@/types/typecontent";
 
 interface Snapshot {
@@ -186,16 +188,24 @@ export function useContentEditor(initialContentTypeId: string, initialValue?: Co
   }, []);
   const contentType = getContentType(contentTypeId);
 
+  // Analysis runs on a deferred copy so typing stays responsive; the
+  // canonical document is parsed once and shared by SEO and Writing.
+  const deferredMarkdown = useDeferredValue(markdown);
+  const document = useMemo(() => parseMarkdown(deferredMarkdown), [deferredMarkdown]);
+
   const seo = useMemo(
     () =>
       analyzeSEO({
         contentType,
-        content: { title, markdown },
+        content: { title, markdown: deferredMarkdown },
         seo: { description: metaDescription, focusKeyword },
         metadata,
+        document,
       }),
-    [contentType, focusKeyword, markdown, metaDescription, metadata, title],
+    [contentType, deferredMarkdown, document, focusKeyword, metaDescription, metadata, title],
   );
+
+  const writing = useMemo(() => analyzeWriting({ contentType, document }), [contentType, document]);
 
   return {
     contentType,
@@ -214,6 +224,8 @@ export function useContentEditor(initialContentTypeId: string, initialValue?: Co
     status,
     setStatus,
     seo,
+    writing,
+    document,
     runCommand,
     applyEdit,
     undo,
