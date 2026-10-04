@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 
 import { hasFeature } from "@/core/content-types/registry";
+import { parseVideoUrl } from "@/core/content/video";
 import {
   addLesson,
   createLesson,
