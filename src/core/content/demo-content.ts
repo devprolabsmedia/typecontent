@@ -255,17 +255,19 @@ const course: DemoDoc = {
     tags: ["TypeScript", "SaaS"],
     featuredImage: "",
     lessons: [
-      ["Introduction", 8],
-      ["Project Architecture", 18],
-      ["TypeScript Fundamentals", 15],
-      ["API Design", 22],
-      ["Database Layer", 25],
-      ["Deployment", 14],
-    ].map(([title, duration], i) => ({
+      ["Introduction", 8, "https://www.youtube.com/watch?v=demointro01"],
+      ["Project Architecture", 18, "https://youtu.be/demoarch0002"],
+      ["TypeScript Fundamentals", 15, "https://www.youtube.com/embed/demofund003"],
+      ["API Design", 22, null],
+      ["Database Layer", 25, null],
+      ["Deployment", 14, null],
+    ].map(([title, duration, videoUrl], i) => ({
       id: `demo-lesson-${i + 1}`,
       title: String(title),
       slug: String(title).toLowerCase().replace(/\s+/g, "-"),
       duration: Number(duration),
+      // Placeholder IDs in the valid 11-character format — not real videos.
+      videoUrl: videoUrl ? String(videoUrl) : undefined,
       order: i + 1,
       status: i < 3 ? ("published" as const) : ("draft" as const),
     })),

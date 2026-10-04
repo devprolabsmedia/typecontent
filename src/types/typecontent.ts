@@ -104,6 +104,8 @@ export interface Lesson {
   description?: string | undefined;
   /** Minutes */
   duration?: number | undefined;
+  /** Optional video URL (YouTube supported; parsed via core/content/video). */
+  videoUrl?: string | undefined;
   /** 1-based position inside the course */
   order: number;
   status?: LessonStatus | undefined;

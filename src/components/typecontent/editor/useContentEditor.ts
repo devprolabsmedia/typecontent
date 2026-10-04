@@ -5,6 +5,12 @@ import { getDemoDoc } from "@/core/content/demo-content";
 import { getContentType } from "@/core/content-types/registry";
 import { analyzeSEO } from "@/core/analyzers/seo";
 import { analyzeWriting } from "@/core/analyzers/writing";
+import {
+  analyzeWritingIssues,
+  applyWritingIssue,
+  writingIssueScores,
+  type WritingIssue,
+} from "@/core/analyzers/writing-issues";
 import { parseMarkdown } from "@/lib/markdown/markdown";
 import type { ContentStatus, Metadata, MetadataValue } from "@/types/typecontent";
 
@@ -207,6 +213,34 @@ export function useContentEditor(initialContentTypeId: string, initialValue?: Co
 
   const writing = useMemo(() => analyzeWriting({ contentType, document }), [contentType, document]);
 
+  // Range-located Writing issues (Apply/Ignore). Runs on the deferred copy so
+  // typing stays responsive; ranges point into the live markdown.
+  const writingIssuesAll = useMemo(
+    () => analyzeWritingIssues(deferredMarkdown),
+    [deferredMarkdown],
+  );
+  /** Session-local ignore list — never persisted, never modifies the document. */
+  const [ignoredIssues, setIgnoredIssues] = useState<ReadonlySet<string>>(new Set());
+  const writingIssues = useMemo(
+    () => writingIssuesAll.filter((i) => !ignoredIssues.has(i.id)),
+    [writingIssuesAll, ignoredIssues],
+  );
+  const writingIssueScoresMemo = useMemo(() => writingIssueScores(writingIssues), [writingIssues]);
+  const ignoreWritingIssue = useCallback((issue: WritingIssue) => {
+    setIgnoredIssues((prev) => new Set(prev).add(issue.id));
+  }, []);
+  /** Apply a deterministic suggestion. Goes through commit() so it is undoable. */
+  const applyWritingSuggestion = useCallback(
+    (issue: WritingIssue, suggestion: string) => {
+      const next = applyWritingIssue(markdown, issue, suggestion);
+      if (next === null) return false;
+      commit({ markdown: next });
+      lastTypedAt.current = 0;
+      return true;
+    },
+    [commit, markdown],
+  );
+
   return {
     contentType,
     contentTypeId,
@@ -225,6 +259,10 @@ export function useContentEditor(initialContentTypeId: string, initialValue?: Co
     setStatus,
     seo,
     writing,
+    writingIssues,
+    writingIssueScores: writingIssueScoresMemo,
+    ignoreWritingIssue,
+    applyWritingSuggestion,
     document,
     runCommand,
     applyEdit,

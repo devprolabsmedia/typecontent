@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 
 import { hasFeature } from "@/core/content-types/registry";
+import { parseVideoUrl } from "@/core/content/video";
 import {
   addLesson,
   createLesson,
@@ -49,6 +50,62 @@ function TagsField({ value, onChange }: { value: string[]; onChange: (v: string[
         placeholder="Add + Enter"
         className="min-w-20 flex-1 bg-transparent px-1 text-sm outline-none"
       />
+    </div>
+  );
+}
+
+function LessonVideoField({
+  lesson,
+  onChange,
+}: {
+  lesson: Lesson;
+  onChange: (videoUrl: string | undefined) => void;
+}) {
+  const [showPreview, setShowPreview] = useState(false);
+  const raw = lesson.videoUrl ?? "";
+  const parsed = raw ? parseVideoUrl(raw) : null;
+  return (
+    <div className="space-y-1 pl-6">
+      <input
+        aria-label={`Lesson ${lesson.order} video URL`}
+        className={input}
+        placeholder="https://youtube.com/watch?v=…"
+        value={raw}
+        onChange={(e) => onChange(e.target.value || undefined)}
+      />
+      {raw &&
+        (parsed ? (
+          <p className="text-[11px] text-success">✓ Valid YouTube URL</p>
+        ) : (
+          <p className="text-[11px] text-warning">⚠ Invalid video URL — YouTube links only</p>
+        ))}
+      {parsed &&
+        (showPreview ? (
+          <div className="space-y-1">
+            <iframe
+              src={parsed.embedUrl}
+              title={`Video preview for lesson ${lesson.order}: ${lesson.title || "Untitled"}`}
+              className="aspect-video w-full rounded-md border border-border"
+              allow="encrypted-media; picture-in-picture"
+              loading="lazy"
+            />
+            <button
+              type="button"
+              className="text-[11px] text-muted-foreground hover:text-foreground"
+              onClick={() => setShowPreview(false)}
+            >
+              Hide preview
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="text-[11px] text-muted-foreground hover:text-foreground"
+            onClick={() => setShowPreview(true)}
+          >
+            Show preview
+          </button>
+        ))}
     </div>
   );
 }
@@ -128,6 +185,10 @@ function LessonsField({ value, onChange }: { value: Lesson[]; onChange: (v: Less
                 <X className="size-3.5" />
               </button>
             </div>
+            <LessonVideoField
+              lesson={l}
+              onChange={(videoUrl) => onChange(updateLesson(value, l.id, { videoUrl }))}
+            />
           </li>
         ))}
       </ol>
