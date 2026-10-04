@@ -61,6 +61,25 @@ export function ContentEditor({
   const [html, setHtml] = useState("");
   const fromHtml = useRef(false);
   const [copied, setCopied] = useState<string | null>(null);
+  // Focus Mode: "words" = 3-Word Focus (extreme), "editor" = Editor Focus.
+  const [focus, setFocus] = useState<null | "words" | "editor">(null);
+  const [focusMenu, setFocusMenu] = useState(false);
+  const [dim, setDim] = useState(false);
+  const wordMark = useRef(0);
+  useEffect(() => {
+    if (!focus) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setFocus(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [focus]);
+  const enterFocus = (mode: "words" | "editor") => {
+    setFocusMenu(false);
+    setDim(false);
+    wordMark.current = markdown.trim() ? markdown.trim().split(/\s+/).length : 0;
+    setFocus(mode);
+  };
   useEffect(() => {
     if (format !== "html") return;
     if (fromHtml.current) {
@@ -82,7 +101,31 @@ export function ContentEditor({
   const slash = useSlashCommands(ed.textareaRef, ed.applyEdit);
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-4 px-4 py-6">
+    <div
+      className={cn(
+        "mx-auto max-w-[1600px] space-y-4 px-4 py-6",
+        focus && "fixed inset-0 z-50 max-w-none overflow-y-auto bg-background",
+      )}
+    >
+      {focus && (
+        <div
+          className={cn(
+            "flex items-center justify-between transition-opacity duration-500",
+            dim && focus === "words" && "opacity-20 focus-within:opacity-100 hover:opacity-100",
+          )}
+        >
+          <span className="font-mono text-xs text-muted-foreground">
+            {focus === "words" ? "3-Word Focus" : "Editor Focus"}
+          </span>
+          <button
+            onClick={() => setFocus(null)}
+            className="rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            Exit Focus (Esc)
+          </button>
+        </div>
+      )}
+      {!focus && (
       <div className="flex flex-wrap items-center gap-2">
         {showTypeSwitcher && (
           <div
