@@ -185,6 +185,10 @@ function LessonsField({ value, onChange }: { value: Lesson[]; onChange: (v: Less
                 <X className="size-3.5" />
               </button>
             </div>
+            <LessonVideoField
+              lesson={l}
+              onChange={(videoUrl) => onChange(updateLesson(value, l.id, { videoUrl }))}
+            />
           </li>
         ))}
       </ol>
