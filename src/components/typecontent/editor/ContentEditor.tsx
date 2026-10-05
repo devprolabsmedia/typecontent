@@ -81,6 +81,14 @@ export function ContentEditor({
     setFocus(mode);
   };
   useEffect(() => {
+    if (focus !== "words") return;
+    const count = markdown.trim() ? markdown.trim().split(/\s+/).length : 0;
+    if (count - wordMark.current >= 3) {
+      wordMark.current = count;
+      setDim(true);
+    }
+  }, [focus, markdown]);
+  useEffect(() => {
     if (format !== "html") return;
     if (fromHtml.current) {
       fromHtml.current = false;
@@ -154,7 +162,38 @@ export function ContentEditor({
         >
           {ed.status}
         </span>
-        <div className="ml-auto flex gap-1" aria-live="polite">
+        <div className="relative ml-auto">
+          <button
+            onClick={() => setFocusMenu((v) => !v)}
+            aria-expanded={focusMenu}
+            aria-haspopup="menu"
+            className="rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            Focus
+          </button>
+          {focusMenu && (
+            <div
+              role="menu"
+              className="absolute right-0 z-20 mt-1 w-40 rounded-md border border-border bg-surface p-1 text-xs"
+            >
+              <button
+                role="menuitem"
+                onClick={() => enterFocus("words")}
+                className="block w-full rounded px-2 py-1.5 text-left hover:bg-secondary"
+              >
+                3-Word Focus
+              </button>
+              <button
+                role="menuitem"
+                onClick={() => enterFocus("editor")}
+                className="block w-full rounded px-2 py-1.5 text-left hover:bg-secondary"
+              >
+                Editor Focus
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="flex gap-1" aria-live="polite">
           {(["HTML", "Markdown"] as const).map((k) => (
             <button
               key={k}
