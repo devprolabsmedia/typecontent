@@ -333,7 +333,13 @@ export function ContentEditor({
                 onFocusKeyword={ed.setFocusKeyword}
               />
             ) : tab === "writing" ? (
-              <WritingPanel writing={ed.writing} />
+              <WritingPanel
+                writing={ed.writing}
+                issues={ed.writingIssues}
+                issueScores={ed.writingIssueScores}
+                onApplyIssue={ed.applyWritingSuggestion}
+                onIgnoreIssue={ed.ignoreWritingIssue}
+              />
             ) : (
               <MetadataPanel
                 type={ed.contentType}
