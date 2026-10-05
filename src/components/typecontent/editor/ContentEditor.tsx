@@ -171,8 +171,9 @@ export function ContentEditor({
           </div>
         )}
       </div>
+      )}
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
+      <div className={cn("grid gap-4", !focus && "lg:grid-cols-[1fr_340px]")}>
         <div className="panel overflow-hidden rounded-lg border border-border bg-surface">
           <EditorToolbar
             onCommand={ed.runCommand}
@@ -298,7 +299,7 @@ export function ContentEditor({
           </div>
         </div>
 
-        <aside className="panel rounded-lg border border-border bg-surface">
+        <aside className={cn("panel rounded-lg border border-border bg-surface", focus && "hidden")}>
           <div
             role="tablist"
             aria-label="Side panel"
